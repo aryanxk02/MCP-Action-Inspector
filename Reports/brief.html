@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MCP Tool Action Classification</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; color:#172033; font-size:10.5pt; line-height:1.38; }
+  h1 { color:#102a43; font-size:25pt; margin:0 0 6pt; }
+  h2 { color:#0b7285; font-size:16pt; border-bottom:1px solid #b7d7df; padding-bottom:3pt; margin-top:20pt; }
+  h3 { color:#243b53; font-size:12pt; margin-bottom:3pt; }
+  p { margin:5pt 0 8pt; }
+  .subtitle { color:#52606d; font-size:12pt; margin-bottom:18pt; }
+  .box { background:#eef7f8; border-left:4px solid #0b7285; padding:9pt 11pt; margin:9pt 0; }
+  .warn { background:#fff8e6; border-left:4px solid #d08c00; padding:9pt 11pt; margin:9pt 0; }
+  .small { color:#52606d; font-size:9pt; }
+  table { border-collapse:collapse; width:100%; margin:7pt 0 11pt; font-size:8.7pt; }
+  th { background:#d9eef2; color:#102a43; text-align:left; }
+  th, td { border:1px solid #b8c4ce; padding:4pt 5pt; vertical-align:top; }
+  .num { text-align:right; }
+  code, pre { font-family: Menlo, Consolas, monospace; font-size:8.5pt; }
+  pre { background:#f4f6f8; padding:8pt; white-space:pre-wrap; border:1px solid #d9e2ec; }
+  ul { margin-top:3pt; }
+  li { margin:2pt 0; }
+  .page { page-break-before:always; }
+  .kpi { font-size:18pt; color:#0b7285; font-weight:bold; }
+  .muted { color:#627d98; }
+</style>
+</head>
+<body>
+<h1>MCP Tool Action Classification</h1>
+<div class="subtitle"> Based on the repository artifacts </div>
+
+<div class="box"><b>One-minute summary.</b> The assignment classifies an MCP tool into exactly one of six action categories: Read, Write, Execute, Destructive, Financial, or Other. The repository uses a server-grouped, stratified train/validation/test split; a TF-IDF + balanced logistic-regression baseline; and a discriminative DistilBERT sequence classifier. On the supplied validation set, the SLM achieved <span class="kpi">93.02% accuracy</span>, <span class="kpi">0.7079 macro F1</span>, and <span class="kpi">0.9276 weighted F1</span>, versus 85.93%, 0.6743, and 0.8639 for the baseline. The headline improvement is meaningful but incomplete: the SLM completely missed the 15 validation examples labeled <code>Other</code>, so macro F1—not accuracy—is the decision metric.</div>
+
+<h2>Data audit and experimental design</h2>
+<table><tr><th>Split</th><th class="num">Rows</th><th class="num">Servers</th><th>Important observations</th></tr>
+<tr><td>Train</td><td class="num">22,143</td><td class="num">1,448</td><td>0 malformed JSONL lines; 316 missing descriptions; 3,617 missing schemas; 1,108 duplicate feature rows.</td></tr>
+<tr><td>Validation</td><td class="num">4,429</td><td class="num">292</td><td>0 malformed JSONL lines; 6 missing descriptions; 737 missing schemas; 62 duplicate feature rows.</td></tr>
+<tr><td>Test</td><td class="num">4,428</td><td class="num">291</td><td>Unlabeled; 42 missing descriptions; 743 missing schemas; 183 duplicate feature rows.</td></tr></table>
+<p>All observed <code>input_schema</code> values were parseable by the EDA check when present. Missing fields are represented as empty strings; the pipeline does not invent information. Text lengths are highly variable: training median 372 characters and maximum 40,907 characters; validation median 408 and maximum 31,064.</p>
+
+<h3>Class imbalance</h3>
+<table><tr><th>Class</th><th class="num">Train</th><th class="num">Validation</th><th class="num">Validation share</th></tr>
+<tr><td>Read</td><td class="num">14,084</td><td class="num">2,817</td><td class="num">63.6%</td></tr>
+<tr><td>Write</td><td class="num">5,433</td><td class="num">1,087</td><td class="num">24.5%</td></tr>
+<tr><td>Execute</td><td class="num">1,175</td><td class="num">235</td><td class="num">5.3%</td></tr>
+<tr><td>Destructive</td><td class="num">1,264</td><td class="num">253</td><td class="num">5.7%</td></tr>
+<tr><td>Financial</td><td class="num">111</td><td class="num">22</td><td class="num">0.5%</td></tr>
+<tr><td>Other</td><td class="num">76</td><td class="num">15</td><td class="num">0.3%</td></tr></table>
+<p>The baseline explicitly uses <code>class_weight="balanced"</code>. The current SLM training code does <b>not</b> apply class weights, oversampling, or focal loss. That is a limitation and likely contributes to the poor minority-class performance, especially <code>Other</code>. A stronger next experiment would add weighted cross-entropy or balanced sampling, tune only on validation, and report whether macro F1 improves.</p>
+
+<h3>Leakage controls</h3>
+<ul><li>Use the supplied server-grouped splits; do not merge files or create a row-level random split.</li><li>Fit TF-IDF vocabulary on training text only, then transform validation; the baseline code follows this.</li><li>Do not use <code>server_slug</code> as an input feature because it can act as a server/category proxy and is not part of the SLM text.</li><li>Do not inspect private test labels or tune on <code>test_unlabeled.jsonl</code>.</li><li>Duplicates are a known risk. Group isolation reduces cross-server leakage, but duplicate feature rows within a split remain and should be audited before a final experiment.</li></ul>
+
+<h2>Input representation and model</h2>
+<h3>Prompt/input format</h3>
+<pre>name: &lt;tool name&gt;
+description: &lt;natural-language description&gt;
+input_schema: &lt;serialized JSON schema&gt;</pre>
+<p>The SLM's <code>make_text</code> joins these three fields with newlines. Missing values become empty strings. This preserves field boundaries and exposes both natural-language intent and argument requirements. The baseline uses the same fields separated by spaces.</p>
+
+<h3>Selection</h3>
+<p>The model is <code>distilbert-base-uncased</code>, loaded with <code>AutoModelForSequenceClassification</code>. DistilBERT is an open pretrained encoder, well below the assignment's 3-billion-parameter limit, and its classification head makes exact-label output natural. The matching Hugging Face tokenizer converts text into token IDs; it is saved with the model for reproducible inference.</p>
+<p>The classifier has six logits with a fixed mapping: <code>0 Read</code>, <code>1 Write</code>, <code>2 Execute</code>, <code>3 Destructive</code>, <code>4 Financial</code>, <code>5 Other</code>.</p>
+
+<h3>Length and truncation</h3>
+<p><code>MAX_LENGTH = 256</code>. Tokenization uses <code>truncation=True</code>, so inputs longer than 256 tokens are cut off. Padding is deferred to <code>DataCollatorWithPadding</code> during batching. This is memory-efficient, but tail truncation can remove important schema fields from long records; a robust follow-up should measure truncation rate and test field-aware truncation or a longer context window.</p>
+
+<h2>Training configuration and checkpoint rule</h2>
+<table><tr><th>Setting</th><th>Value</th><th>Meaning</th></tr>
+<tr><td>Epochs</td><td>1</td><td>One pass through training data; no early-stopping callback.</td></tr>
+<tr><td>Train/eval batch</td><td>2 / 4 per device</td><td>Effective train batch is 8 because accumulation is 4.</td></tr>
+<tr><td>Learning rate</td><td>2e-5</td><td>Fine-tuning step size.</td></tr>
+<tr><td>Weight decay</td><td>0.01</td><td>Regularization.</td></tr>
+<tr><td>Evaluation/checkpoint</td><td>Every epoch</td><td>Validation metrics and checkpoint are produced at epoch boundaries.</td></tr>
+<tr><td>Selection metric</td><td>Macro F1</td><td>Balances the six classes rather than favoring Read.</td></tr>
+<tr><td>Seed</td><td>42</td><td>Controls the configured training randomness.</td></tr>
+<tr><td>Mixed precision</td><td>Disabled</td><td><code>fp16=False</code>.</td></tr></table>
+<p><code>load_best_model_at_end=True</code> selects the checkpoint with the best validation macro F1, while <code>save_total_limit=1</code> keeps one checkpoint. Because this run has only one epoch, the rule is formally present but checkpoint selection is effectively trivial. A better stopping design would run multiple epochs, use early stopping on macro F1 with patience, and log the full validation curve.</p>
+
+<h2>Results on the supplied validation set</h2>
+<p>These numbers are read from <code>slm_metrics.json</code> and <code>tfidf_metrics.json</code>; they are validation results, not private-test results.</p>
+<table><tr><th>Model</th><th class="num">Accuracy</th><th class="num">Macro F1</th><th class="num">Weighted F1</th></tr>
+<tr><td>TF-IDF (1–2 grams) + balanced logistic regression</td><td class="num">0.8593</td><td class="num">0.6743</td><td class="num">0.8639</td></tr>
+<tr><td>DistilBERT sequence classifier</td><td class="num">0.9302</td><td class="num">0.7079</td><td class="num">0.9276</td></tr>
+<tr><td>SLM − baseline</td><td class="num">+0.0709</td><td class="num">+0.0336</td><td class="num">+0.0636</td></tr></table>
+
+<table><tr><th>Actual class</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th class="num">Support</th></tr>
+<tr><td>Read</td><td class="num">0.9479</td><td class="num">0.9684</td><td class="num">0.9580</td><td class="num">2,817</td></tr>
+<tr><td>Write</td><td class="num">0.8945</td><td class="num">0.9126</td><td class="num">0.9035</td><td class="num">1,087</td></tr>
+<tr><td>Execute</td><td class="num">0.8418</td><td class="num">0.7021</td><td class="num">0.7657</td><td class="num">235</td></tr>
+<tr><td>Destructive</td><td class="num">0.9610</td><td class="num">0.8775</td><td class="num">0.9174</td><td class="num">253</td></tr>
+<tr><td>Financial</td><td class="num">0.8667</td><td class="num">0.5909</td><td class="num">0.7027</td><td class="num">22</td></tr>
+<tr><td>Other</td><td class="num">0.0000</td><td class="num">0.0000</td><td class="num">0.0000</td><td class="num">15</td></tr></table>
+
+<h3>SLM confusion matrix</h3>
+<p class="small">Rows are actual labels; columns are predicted labels. Order: Read, Write, Execute, Destructive, Financial, Other.</p>
+<table><tr><th>Actual \ Predicted</th><th class="num">Read</th><th class="num">Write</th><th class="num">Execute</th><th class="num">Destructive</th><th class="num">Financial</th><th class="num">Other</th></tr>
+<tr><th>Read</th><td class="num">2728</td><td class="num">67</td><td class="num">14</td><td class="num">6</td><td class="num">2</td><td class="num">0</td></tr>
+<tr><th>Write</th><td class="num">86</td><td class="num">992</td><td class="num">7</td><td class="num">2</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th>Execute</th><td class="num">41</td><td class="num">29</td><td class="num">165</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th>Destructive</th><td class="num">10</td><td class="num">14</td><td class="num">7</td><td class="num">222</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><th>Financial</th><td class="num">0</td><td class="num">7</td><td class="num">1</td><td class="num">1</td><td class="num">13</td><td class="num">0</td></tr>
+<tr><th>Other</th><td class="num">13</td><td class="num">0</td><td class="num">2</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr></table>
+
+<h2>Why the SLM improved—and where it failed</h2>
+<p><b>Why it improved:</b> the encoder can combine name, prose, and schema cues and learn semantic patterns that word-level TF-IDF misses. The largest broad gains are in Read, Write, and Destructive F1. The SLM also makes fewer Read/Write and Read/Execute confusions than the baseline, consistent with better contextual representations.</p>
+<p><b>Why the macro-F1 gain is modest:</b> the data is strongly imbalanced, and the SLM was not class-weighted. Financial has only 22 validation examples and Other only 15; a few mistakes move their metrics sharply. The SLM predicts no Other examples correctly, while the baseline gets 5/15. The SLM's overall accuracy therefore overstates balanced performance.</p>
+<p><b>Likely failure modes:</b></p>
+<ul><li><b>Execute vs Read/Write:</b> tool names and schemas may describe an operation without clearly stating whether it causes an external side effect.</li><li><b>Financial vs Write:</b> financial tools can look like generic create/update tools; the class is very small.</li><li><b>Other:</b> the category is both tiny and heterogeneous, so the model has little evidence for a stable decision boundary.</li><li><b>Long-schema truncation:</b> at 256 tokens, decisive fields may be beyond the retained prefix.</li></ul>
+
+
+<h2>Valid, deterministic, deployable inference</h2>
+
+<pre>tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
+model.eval()
+with torch.no_grad():
+    logits = model(**tokenizer(text, return_tensors="pt",
+                               truncation=True, max_length=256)).logits
+label = model.config.id2label[logits.argmax(-1).item()]</pre>
+
+<h3>Measured model and runtime properties</h3>
+<table><tr><th>Property</th><th>Measured value</th><th>Qualification</th></tr>
+<tr><td>Parameters</td><td>66,958,086</td><td>Counted from the saved model.</td></tr>
+<tr><td>Model weights</td><td>255 MB</td><td><code>model.safetensors</code>; deployment directory is roughly 255 MB plus tokenizer/config.</td></tr>
+<tr><td>Training artifact directory</td><td>about 1.0 GB</td><td>Includes duplicate checkpoint and optimizer state; do not ship optimizer state for inference.</td></tr>
+<tr><td>Peak process RSS</td><td>about 564 MiB</td><td>Measured locally on macOS arm64 CPU; not a GPU VRAM measurement.</td></tr>
+<tr><td>Warm single-record latency</td><td>35.9 ms</td><td>100 runs, batch size 1, 158-token sample, local CPU.</td></tr>
+<tr><td>Warm throughput</td><td>27.9 records/sec</td><td>Same local CPU benchmark; production hardware and batching will differ.</td></tr></table>

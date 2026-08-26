@@ -1,140 +1,82 @@
-# AI Engineer Take-Home Assessment: Small Language Model Classification
+# MCP Tool Action Classification
 
-## Objective
+This project classifies each MCP tool into one of six categories: `Read`, `Write`, `Execute`, `Destructive`, `Financial`, or `Other`.
 
-Build and evaluate a small language model that classifies an MCP tool into exactly one action category:
+## Setup and commands
 
-- `Read`
-- `Write`
-- `Execute`
-- `Destructive`
-- `Financial`
-- `Other`
-
-The classifier should infer the label from the tool's natural-language and schema fields. This exercise tests practical model development, data judgment, evaluation rigor, and production thinking—not only the final metric.
-
-## Timebox and compute budget
-
-- Recommended effort: **6 hours**; hard cap: **8 hours**.
-- Use an open-weight language model with **3 billion parameters or fewer**.
-- The complete experiment must be feasible on a single commodity GPU with **24 GB VRAM or less**. Parameter-efficient fine-tuning such as LoRA or QLoRA is encouraged.
-- Training a model from scratch is not expected.
-- External labeled datasets are not allowed. Public pretrained model weights and standard open-source libraries are allowed.
-
-## Provided files
-
-- `data/train.jsonl`: labeled training records.
-- `data/validation.jsonl`: labeled validation records.
-- `data/test_unlabeled.jsonl`: held-out test records without labels.
-- `data/servers_public.jsonl`: optional server-level metadata, with direct category labels removed.
-- `data/split_summary.json`: split sizes and label counts.
-
-Each tool record contains:
-
-```json
-{
-  "record_id": "stable identifier",
-  "server_slug": "server grouping key",
-  "name": "tool/function name",
-  "description": "natural-language tool description",
-  "input_schema": "JSON schema serialized as text",
-  "category": "present only in train and validation"
-}
+```bash
+pip install -r requirements.txt
+python tfidf.py
+python main.py
+python analyze_validation.py
 ```
 
-The train, validation, and test sets are isolated by `server_slug`. Do not merge the sets or create a new random row-level split.
+The training script creates the model, validation metrics, confusion matrix, and `predictions.csv`.
 
-## Required work
+## Model and input representation
 
-### 1. Data audit
+The SLM is `distilbert-base-uncased`, a small open-weight DistilBERT sequence-classification model. Each record is represented as:
 
-Document:
+```text
+name: <tool name>
+description: <tool description>
+input_schema: <serialized JSON schema>
+```
 
-- label distribution and imbalance;
-- missing or malformed fields;
-- duplicate or near-duplicate risks;
-- potential target leakage;
-- the text representation you chose and why.
+The `server_slug` is excluded to avoid server/category leakage. Missing fields are represented as empty strings.
 
-### 2. Baseline
+## Truncation policy
 
-Implement at least one non-neural or non-generative baseline, such as TF-IDF plus logistic regression or a linear SVM. Report the same metrics used for the SLM.
+Inputs are tokenized with a maximum length of 256 tokens. Longer inputs are truncated from the tail. This keeps memory usage manageable, but important fields near the end of long schemas may be lost.
 
-### 3. SLM training
+## Class imbalance
 
-Fine-tune or adapt an SLM to predict one of the six labels. You may formulate this as sequence classification or constrained text generation.
+The TF-IDF baseline uses balanced logistic regression with `class_weight="balanced"`. The SLM uses standard cross-entropy without class weighting or oversampling. Macro F1 is used as the primary metric so that minority classes are not hidden by the dominant `Read` class.
 
-Your solution must explain:
+## Training configuration
 
-- model and tokenizer selection;
-- prompt/input format;
-- maximum sequence length and truncation policy;
-- class-imbalance strategy;
-- training configuration;
-- checkpoint selection and stopping rule;
-- steps taken to make output labels valid and deterministic.
+- Epochs: 1
+- Train batch size: 2 per device
+- Gradient accumulation: 4 steps, effective batch size 8
+- Evaluation batch size: 4
+- Learning rate: `2e-5`
+- Weight decay: `0.01`
+- Evaluation and checkpointing: every epoch
+- Checkpoint metric: validation macro F1
+- Random seed: 42
+- Maximum sequence length: 256
 
-### 4. Evaluation
+The classifier uses a fixed label mapping and `argmax`, producing exactly one deterministic valid category per record.
 
-Use **macro F1** as the primary metric. Also report:
+## Validation results
 
-- per-class precision, recall, and F1;
-- weighted F1;
-- accuracy;
-- confusion matrix;
-- invalid-output rate, if using generative classification;
-- model size, peak memory if available, and inference latency or throughput.
+| Model | Accuracy | Macro F1 | Weighted F1 |
+|---|---:|---:|---:|
+| TF-IDF + balanced logistic regression | 0.8593 | 0.6743 | 0.8639 |
+| DistilBERT SLM | 0.9302 | 0.7079 | 0.9276 |
 
-Do not tune on the held-out test set. The employer will score `predictions.csv` against private labels.
+The SLM results are measured on the supplied validation set. The test labels are private and are used only to generate `predictions.csv`.
 
-### 5. Error analysis
+## Limitations
 
-Review at least 20 validation errors. Identify at least three recurring failure modes and propose concrete improvements. Include examples, especially for minority classes and ambiguous `Write` versus `Execute` behavior.
+- The SLM was trained for only one epoch.
+- The SLM has no class-weighting or oversampling, so rare classes remain difficult.
+- Tail truncation may remove important information from long schemas.
+- Test accuracy cannot be measured because test labels are private.
 
-### 6. Inference interface
+## Inference
 
-Provide a command that produces predictions for a JSONL file:
+Run the reusable inference interface with:
 
 ```bash
 python predict.py \
-  --model-path <path-or-model-id> \
+  --model-path slm_model \
   --input data/test_unlabeled.jsonl \
   --output predictions.csv
 ```
 
-The output must contain exactly:
+The output contains exactly:
 
 ```csv
 record_id,category
 ```
-
-Every input record must receive exactly one valid category.
-
-## Deliverables
-
-Submit a repository or archive containing:
-
-1. `README.md` with setup, commands, decisions, and results.
-2. Reproducible data-preparation code.
-3. Baseline training/evaluation code.
-4. SLM training code or notebook.
-5. `predict.py` or an equivalent inference entry point.
-6. `predictions.csv` for the supplied held-out test set.
-7. `metrics.json` and a confusion-matrix image or table.
-8. A short model card covering intended use, limitations, and known failure modes.
-
-Do not include large model weights in the submission. Provide a model identifier, adapter artifact, or reproducible checkpoint instructions.
-
-## Evaluation priorities
-
-We value correct experimental design, leakage prevention, reproducibility, thoughtful error analysis, and deployable inference. A clear, honest solution with well-explained tradeoffs is stronger than an opaque solution reporting one high score.
-
-## Follow-up interview
-
-Be prepared for a 45-minute discussion covering:
-
-- why the model improved or failed to improve over the baseline;
-- how you would handle new categories or multi-label tools;
-- calibration and abstention for high-risk predictions;
-- production monitoring and drift;
-- how you would reduce cost and latency without materially hurting macro F1.

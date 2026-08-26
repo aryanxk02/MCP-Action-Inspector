@@ -70,7 +70,7 @@ Run the reusable inference interface with:
 
 ```bash
 python predict.py \
-  --model-path slm_model \
+  --model-path slm_model/slm_model \
   --input data/test_unlabeled.jsonl \
   --output predictions.csv
 ```

@@ -1,0 +1,36 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Packaging and test artifacts
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Logs and local OS files
+*.log
+.DS_Store
+
+# Generated model artifacts and experiment outputs
+slm_model/
+predictions.csv
+*_metrics.json
+*_confusion_matrix.csv
+
+# Jupyter/IPython artifacts
+.ipynb_checkpoints/

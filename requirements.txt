@@ -1,0 +1,5 @@
+numpy>=1.26
+scikit-learn>=1.4,<2
+torch>=2.2
+transformers>=4.46,<5
+accelerate>=0.30

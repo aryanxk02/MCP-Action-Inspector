@@ -1,16 +1,21 @@
-"""Find validation errors and summarize the three most common failure modes."""
+"""List incorrectly predicted examples from the validation dataset."""
 
+import csv
 import json
 import os
-from collections import Counter, defaultdict
 
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 
 LABELS = ["Read", "Write", "Execute", "Destructive", "Financial", "Other"]
-MODEL_DIR = "slm_model"
-BATCH_SIZE = 32
+
+VALIDATION_FILE = "data/validation.jsonl"
+MODEL_DIR = "slm_model/slm_model"
+OUTPUT_FILE = "validation_errors.csv"
+
+BATCH_SIZE = 16
+MAX_LENGTH = 256
 
 
 def load_jsonl(path):
@@ -27,33 +32,60 @@ def make_text(row):
 
 
 def main():
+    # Use the trained model saved by main.py.
     model_dir = MODEL_DIR
+
     if not os.path.exists(os.path.join(model_dir, "config.json")):
-        model_dir = "slm_model/slm_model"
+        raise FileNotFoundError(
+            f"Could not find trained model at '{model_dir}'. "
+            "Run main.py first to train the model."
+        )
+
+    print("Loading model...")
 
     tokenizer = AutoTokenizer.from_pretrained(model_dir)
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+
+    # Force CPU.
+    device = torch.device("cpu")
+    model.to(device)
     model.eval()
 
-    rows = load_jsonl("data/validation.jsonl")
+    print("Loading validation data...")
+
+    rows = load_jsonl(VALIDATION_FILE)
+
     errors = []
+
+    print(f"Checking {len(rows)} validation examples...")
 
     for start in range(0, len(rows), BATCH_SIZE):
         batch = rows[start:start + BATCH_SIZE]
+
+        texts = [make_text(row) for row in batch]
+
         inputs = tokenizer(
-            [make_text(row) for row in batch],
+            texts,
             padding=True,
             truncation=True,
-            max_length=256,
+            max_length=MAX_LENGTH,
             return_tensors="pt",
         )
 
-        with torch.no_grad():
-            predictions = model(**inputs).logits.argmax(dim=-1).tolist()
+        inputs = {
+            key: value.to(device)
+            for key, value in inputs.items()
+        }
 
-        for row, prediction_id in zip(batch, predictions):
+        # No gradients needed during prediction.
+        with torch.inference_mode():
+            logits = model(**inputs).logits
+            predicted_ids = logits.argmax(dim=-1).tolist()
+
+        for row, predicted_id in zip(batch, predicted_ids):
             actual = row["category"]
-            predicted = LABELS[prediction_id]
+            predicted = LABELS[predicted_id]
+
             if actual != predicted:
                 errors.append({
                     "record_id": row["record_id"],
@@ -63,35 +95,44 @@ def main():
                     "predicted": predicted,
                 })
 
-    with open("validation_errors.jsonl", "w", encoding="utf-8") as file:
-        for error in errors:
-            file.write(json.dumps(error, ensure_ascii=False) + "\n")
+    # Print errors to the terminal.
+    print()
+    print("=" * 80)
+    print(f"INCORRECT PREDICTIONS: {len(errors)}")
+    print("=" * 80)
 
-    counts = Counter((e["actual"], e["predicted"]) for e in errors)
-    examples = defaultdict(list)
-    for error in errors:
-        pair = (error["actual"], error["predicted"])
-        if len(examples[pair]) < 2:
-            examples[pair].append(error)
+    for i, error in enumerate(errors, start=1):
+        print()
+        print(f"[{i}] Record ID: {error['record_id']}")
+        print(f"Name:       {error['name']}")
+        print(f"Actual:     {error['actual']}")
+        print(f"Predicted:  {error['predicted']}")
+        print(f"Description: {error['description']}")
+        print("-" * 80)
 
-    with open("failure_modes_report.md", "w", encoding="utf-8") as report:
-        report.write("# Recurring Validation Failure Modes\n\n")
-        report.write(f"Reviewed {len(errors)} validation errors.\n\n")
+    # Save errors to a CSV so they are easy to inspect.
+    with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(
+            file,
+            fieldnames=[
+                "record_id",
+                "name",
+                "description",
+                "actual",
+                "predicted",
+            ],
+        )
 
-        for number, ((actual, predicted), count) in enumerate(counts.most_common(3), 1):
-            report.write(
-                f"## {number}. Actual `{actual}` predicted as `{predicted}` "
-                f"({count} errors)\n\n"
-            )
-            for example in examples[(actual, predicted)]:
-                report.write(
-                    f"- `{example['record_id']}` — {example['name']}\n"
-                    f"  - {example['description']}\n"
-                )
-            report.write("\n")
+        writer.writeheader()
+        writer.writerows(errors)
 
-    print(f"Found {len(errors)} validation errors.")
-    print("Saved validation_errors.jsonl and failure_modes_report.md")
+    print()
+    print("=" * 80)
+    print(f"Total validation examples: {len(rows)}")
+    print(f"Incorrect predictions:     {len(errors)}")
+    print(f"Validation accuracy:       {(len(rows) - len(errors)) / len(rows):.4f}")
+    print(f"Saved errors to:            {OUTPUT_FILE}")
+    print("=" * 80)
 
 
 if __name__ == "__main__":

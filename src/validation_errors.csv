@@ -1,0 +1,1221 @@
+record_id,name,description,actual,predicted
+659049cdd08b8243,firecrawl_crawl,"
+Starts an asynchronous crawl job on a website and extracts content from all pages.
+
+**Best for:** Extracting content from multiple related pages, when you need comprehensive coverage.
+**Not recommended for:** Extracting content from a single page (use scrape); when token limits are a concern (use map + batch_scrape); when you need fast results (crawling can be slow).
+**Warning:** Crawl responses can be very large and may exceed token limits. Limit the crawl depth and number of pages, or use map + batch_scrape for better control.
+**Common mistakes:** Setting limit or maxDepth too high (causes token overflow); using crawl for a single page (use scrape instead).
+**Prompt Example:** ""Get all blog posts from the first two levels of example.com/blog.""
+**Usage Example:**
+```json
+{
+  ""name"": ""firecrawl_crawl"",
+  ""arguments"": {
+    ""url"": ""https://example.com/blog/*"",
+    ""maxDepth"": 2,
+    ""limit"": 100,
+    ""allowExternalLinks"": false,
+    ""deduplicateSimilarURLs"": true
+  }
+}
+```
+**Returns:** Operation ID for status checking; use firecrawl_check_crawl_status to check progress.
+",Read,Execute
+af86077ce7687648,veo_image_to_video,"Generate AI video from one or more reference images using Veo.
+
+    This creates a video using your image(s) as reference frames. The video
+    will animate from/between your provided images according to the prompt.
+
+    Image modes:
+    - 1 image: First-frame mode - the video starts from your image
+    - 2-3 images: First-last frame mode - video interpolates between images
+    - veo31-fast-ingredients model: Multi-image fusion - blends elements from all images
+
+    Use this when:
+    - You have a specific image you want to animate
+    - You want consistent visual style from a reference
+    - You need to create a video transition between two images
+
+    For video generation from text only, use veo_text_to_video instead.
+
+    Returns:
+        Task ID and generated video information including URLs and state.
+    ",Write,Read
+6a11150a56b34567,registry,"MCP server registry. Actions: ""find_tool"" (single-call tool discovery — BM25-ranked search by intent, returns top match with required args, confidence label, and auto-activates server; PREFER THIS for tool discovery), ""find_tools"" (batch find_tool — pass intents:['intent1','intent2',...] to discover N tools in ONE round-trip; use for multi-step tasks), ""get_schema"" (full input_schema for a tool already returned by find_tool — only needed for fat schemas with optional/polymorphic args), ""list"" (search local registry by server), ""install"" (add server from marketplace or manual config), ""uninstall"" (remove server), ""activate"" / ""deactivate"" (start/stop server and expose/hide its tools), ""browse"" (search official MCP registry), ""status"" (show active servers and tools), ""sync"" (re-read AGENT_DISCOVER_SETUP_FILE and ensure listed servers are registered; optional ""file"" param to override path).",Destructive,Read
+88e424e751c413ea,aps_compute_compute_axis_weights,"Compute the C-axis fractional weight vector from a list of inference billing records (prompt_tokens, completion_tokens). Returns canonical ComputeAxisEntry[] with 6-digit decimal compute_share strings that sum to ~1.0 and feed directly into aps_construct_attribution_primitive. Weights = prompt_tokens + completion_tokens × COMPLETION_MULTIPLIER (default 3.0), normalized per spec BUILD-B §'The C-axis formula'. Parameter names match the SDK: `providers`, optional `profile`.",Execute,Write
+07904db451a8546a,aps_compute_data_axis_weights,"Compute the D-axis fractional weight vector from a list of AccessReceipt records with role, timestamp, and content length. Returns canonical DataAxisEntry[] with 6-digit decimal contribution_weight strings that sum to ~1.0 and feed directly into aps_construct_attribution_primitive. Empty input → empty array; all-zero raw weights → error. Weights = role × recency_decay × length_weight, normalized per spec BUILD-B §'The D-axis formula'. Parameter names match the SDK: `sources`, `action_timestamp`, optional `profile`.",Read,Write
+d68d2710170345cb,aps_sign_attribution_consent,"Representation boundary: the cited principal adds their consent signature to an AttributionReceipt. Without this signature, verifyAttributionConsent and checkArtifactCitations reject the receipt.",Read,Write
+d33999bd7fb5b6e3,declare_reidentification_risk,Declare re-identification risk for transformed or synthetic data.,Read,Write
+e4f7e6c93d10a133,define_emergency_pathway,Define a pre-authorized emergency pathway at delegation time. Only the delegator can define these.,Read,Write
+3e587d97c955503f,file_data_dispute,File a dispute against a data artifact. The protocol records disputes — resolution is external.,Read,Write
+897d8f2b8e4ffecb,gateway_process_tool_call,[deprecated in v3.0.0 — use gateway.aeoess.com REST API] Process a tool call through the gateway enforcement boundary.,Read,Execute
+506fb674121b4b3f,handoff_evidence,[OPERATOR] Transfer approved evidence from researcher to analyst.,Read,Financial
+9e484a315cb37980,respond_to_intro,"Respond to an introduction request. Approve to share your disclosed information, or decline.",Read,Write
+7cf2535eeb56c338,rotate_key,"Rotate an agent's Ed25519 key. Planned mode: configurable overlap (default 24h). Emergency mode: immediate old-key retirement. Returns updated DID document, rotation state, and revocation results.",Read,Write
+51382e0a37f19986,sub_delegate,Sub-delegate authority to another agent (must be within your delegation scope and depth).,Read,Write
+4b3505a19392d83d,remember,"Use when the user asks to remember, store, note, or save a specific decision, fact, or insight.",Write,Read
+86f99288adc5c47d,crypto_dtd,"Get the Distance-to-Default (DtD) score for a crypto token. DtD measures distance-to-default on a 0-5 scale (5=healthy, 0=imminent collapse). Returns 7 signal scores (Liquidity, Holders, Resilience, Fundamental, Contagion, Structural, Relative Weakness), trend classification (FREEFALL/FALLING/SLIDING/STABLE/IMPROVING), crash probability, and Structural Collapse status. Example: crypto_ndd(token_id='solana')",Execute,Read
+1a22d523a06b5b6e,request_approval,"Request human approval for a sensitive agent action.
+
+Use this when:
+- Policy requires human review before execution
+- Agent attempts a high-risk action
+- You want to add an extra safety check
+
+Approval requests are sent to designated approvers via:
+- Email notification
+- Slack notification (if configured)
+- Dashboard alert
+
+Requests expire after the specified time (default: 24 hours).",Write,Read
+7eacae9fcc3539ca,agentpact.archive_need,Archive a need,Read,Write
+2cf25fc44599f723,agentpact.archive_offer,Archive an offer,Read,Write
+7fce9ed80aabe535,agentpact.create_payment_intent,Fund milestone in USDC via wallet,Read,Write
+3926d9c137918fcf,agentpact.open_dispute,Open dispute with 7-day timeout,Read,Write
+e911d8ce32e09b3a,agentpact.register,Register an agent and get an API key. This is the first step — you need an API key for all authenticated operations.,Read,Write
+56d0327a62073fc8,agentpact.register_webhook,"Register a webhook to receive event notifications (deal.proposed, payment.funded, etc.)",Read,Write
+de2497216aca79ec,agentpact.submit_delivery,Submit milestone delivery artifacts,Read,Write
+3b006ea278e491f3,sync_resources,"Synchronize subscribed AI resources with hybrid sync strategy. Command and Skill resources: registered as MCP Prompts on the server. Complex skills with scripts download local files to ISOLATED PATH (~/.csp-ai-agent/skills/<name>/) to prevent AI auto-discovery. CRITICAL: .csp-ai-agent MUST be a SIBLING of .cursor (same parent directory). AI Agent on Windows must: (1) find .cursor location (check user home first, then AppData), (2) extract parent directory, (3) create .csp-ai-agent in that parent directory. This ensures telemetry tracking by forcing resolve_prompt_content as entry point. If the user subscribed to a NEW Command or Skill in THIS conversation and you need to execute it immediately, do NOT wait for native prompts/get. After this tool completes, call `resolve_prompt_content` with the new prompt_name or resource_id, then execute the returned content. 
+
+⚠️ CRITICAL: HANDLING LARGE RESULTS (>100KB with many local_actions_required)
+When this tool returns local_actions_required array with many actions (>10) or large content fields:
+  (1) DO NOT try to display or read the full result JSON — it may be 100KB-500KB.
+  (2) DO NOT just read the summary field and stop — local_actions are MANDATORY.
+  (3) IMMEDIATELY start executing actions in order:
+      - Parse each action from local_actions_required array
+      - Execute write_file / merge_mcp_json / delete_file as instructed below
+      - Track success/failure count for each action
+  (4) Report concise summary to user: ""Executed 46 local actions: 45 succeeded, 1 failed""
+  (5) Only show failed actions in detail (do not list all successful actions)
+
+Rule and MCP resources are returned as `local_actions_required` — an ordered list of write_file, merge_mcp_json, or other actions that the AI Agent MUST execute on the USER'S LOCAL MACHINE after receiving the response. Execute every action in the list in order before reporting success to the user. 📌 SINGLE-RESOURCE SYNC (recommended after subscribe): Pass `resource_ids: [""<id>""]` to sync only specific resource(s). local_actions_required will contain ONLY actions for those resources — drastically reduces context overhead. Use this after manage_subscription(subscribe) to sync just the newly subscribed resource. 
+⚠️ FULL SYNC CONFIRMATION REQUIRED: Calling with mode=""full"" without resource_ids requires user confirmation. The server returns error code FULL_SYNC_REQUIRES_CONFIRMATION. Surface the warning to the user, and if confirmed, retry with _confirmed_full_sync: true. Full sync with resource_ids (scoped) does NOT require confirmation. 
+OPTIMIZATION: Before calling this tool in incremental mode, read ~/.cursor/mcp.json and pass Object.keys(mcpServers || {}) as `configured_mcp_servers` parameter. This allows the server to skip downloading MCP resources that are already configured, significantly reducing API calls, network traffic, and local action overhead. 
+⚠️ BASE64 DECODE — APPLIES TO BOTH write_file AND check_file:   When `encoding === ""base64""` (write_file) or `expected_content_encoding === ""base64""`   (check_file), the corresponding `content` / `expected_content` field is base64-encoded   by the server. The server does this for ALL non-.md/.mdc files (shell scripts, configs,   binary blobs) to keep Cursor's renderer from triggering catastrophic regex backtracking   on raw script characters ($(), [[ ]], URLs etc.) — see prior incident notes.   AI Agent MUST decode base64 BEFORE writing to disk or comparing against local content:     write_file:  fileBytes = Buffer.from(action.content, ""base64"") (write as binary buffer)     check_file:  decoded = Buffer.from(action.expected_content, ""base64"").toString(""utf8"")                  then string-compare against fs.readFileSync(action.path, ""utf8"")   When the encoding field is ""utf8"" (or omitted), the value is the literal file body —   write or compare as-is, no decoding. For write_file actions:   SPECIAL HANDLING FOR COMPLEX SKILLS (when action has `is_skill_manifest: true`):     (1) This action is the FIRST script file — check skill version using manifest FIRST.     (2) Read manifest file at {CSP_AGENT_ROOT}/.manifests/<skill-name>.md (if exists).         Where {CSP_AGENT_ROOT} is a SIBLING of {CURSOR_ROOT} (same parent directory).     (3) action.skill_manifest_content is ALWAYS base64-encoded — first decode it:         decodedManifest = Buffer.from(action.skill_manifest_content, ""base64"").toString(""utf8"")         Then compare decodedManifest against the existing manifest file content (string equality).     (4) If identical: SKIP this action AND ALL SUBSEQUENT write_file actions for this skill.     (5) If different or manifest missing:         - PROCEED with this action and all subsequent write_file actions for this skill.         - After writing all script files, write decodedManifest (the UTF-8 form, NOT the raw base64 string)           to {CSP_AGENT_ROOT}/.manifests/<skill-name>.md     (6) NOTE: SKILL.md is NEVER written to the skills directory (only to .manifests/) to prevent Cursor auto-discovery.   GENERAL HANDLING (when action has NO `is_skill_manifest` marker):     (1) Read the existing file at `path` (if it exists) using fs.readFile() or equivalent.     (2) Compare the file content directly (string equality) against the `content` field.     (3) SKIP the write if they are EXACTLY equal — the file is already up-to-date.     (4) Otherwise, create any missing parent directories and write the file.     (5) If `mode` field is present (e.g. ""0755""), set file permissions using fs.chmod() on Unix systems.   CRITICAL — DUAL-LAYER RULE SYNC (when scope=all):     When syncing Rule resources with scope=all, the server generates TWO INDEPENDENT write_file actions:     one for global (~/.cursor/rules/) and one for workspace (<workspace>/.cursor/rules/).     The AI MUST process EACH action independently with its own content comparison:     - Action #1: Compare ~/.cursor/rules/xxx.mdc content → skip if identical, write if different.     - Action #2: Compare .cursor/rules/xxx.mdc content → skip if identical, write if different.     NEVER assume both locations have the same content. NEVER skip action #2 just because action #1 was skipped.     Example: global is v2.0 (skip), workspace is v1.0 (must update) — both actions must be checked separately. For merge_mcp_json actions:   (1) If the action has `skip_if_exists: true` AND `mcpServers[server_name]` already exists       in ~/.cursor/mcp.json, SKIP this action entirely — the server is already configured       and any user-edited env values must not be overwritten.   (2) Otherwise read the existing ~/.cursor/mcp.json, smart-merge the provided entry       (preserve existing user env values), then write the file back. For check_file actions (check mode only):   (1) Read the local file at `path` (if it exists).   (2) Compare the local file content directly (string equality) against the `expected_content` field.   (3) Report the check result:       - ""match"" if content is identical (resource is up-to-date).       - ""mismatch"" if content differs (resource needs updating).       - ""missing"" if the local file does not exist (resource needs installation).   (4) Aggregate all check results and update the sync_resources response:       - If ALL files match → report resource as ""cached"".       - If ANY file mismatches or is missing → report resource as ""failed"" (needs sync).",Execute,Read
+b8505fc449d06304,track_usage,"Record the invocation of an AI Resource (Command or Skill) for telemetry. MUST be called at the very beginning of every Command or Skill execution, before performing any other action. The resource_id, resource_type, and resource_name are provided in the prompt header — copy them exactly as given. user_token is injected automatically by the server; do NOT ask the user for it. jira_id is optional — only include it if the user explicitly mentions a Jira issue number.",Write,Read
+23b4842879e344c9,smart_translate_workflow,"Execute intelligent translation workflow with automatic language detection and quality validation.
+
+This workflow combines multiple translation operations into a single, intelligent process:
+1. Automatically detects source language (if enabled)
+2. Validates language pair support
+3. Translates text with optional terminology
+4. Validates translation quality
+5. Returns comprehensive results with quality metrics
+
+Benefits:
+- Eliminates manual language specification
+- Built-in quality assurance with confidence scoring
+- Automatic language pair validation
+- Comprehensive results with detection, translation, and quality metrics",Read,Execute
+8481f20e04c3055e,fork_repository,Fork a GitHub repository to your account or specified organization,Write,Read
+2121f30f7734b441,datagovsg_initiate_download,Initiate download of a data.gov.sg dataset with optional filtering,Read,Write
+f9394b8a3d4e630c,browser_mouse_wheel,"Scroll the page by the specified pixel amounts.
+
+Default scrolls down by 500px (roughly half a viewport). Use negative
+delta_y to scroll up. Returns the page snapshot after scrolling.",Read,Write
+71f7c11fdfafdb13,associate_assets,"Associate a child asset with the given parent asset through a hierarchy.
+
+Args:
+    asset_id: The ID of the parent asset. Accepts UUID format (12345678-1234-1234-1234-123456789012)
+             or external ID format (externalId:my-external-id). Use list_assets to get the
+             correct ID if you only have the asset name.
+    hierarchy_id: The ID of a hierarchy in the parent asset's model
+    child_asset_id: The ID of the child asset to be associated. Accepts UUID format (12345678-1234-1234-1234-123456789012)
+                   or external ID format (externalId:my-external-id). Use list_assets to get the
+                   correct ID if you only have the asset name.
+    region: AWS region (default: us-east-1)
+    client_token: A unique case-sensitive identifier for the request
+
+Returns:
+    Dictionary containing association response",Read,Write
+5efd5f76596b536e,associate_time_series_to_asset_property,"Associate a time series (data stream) with an asset property.
+
+Args:
+    alias: The alias that identifies the time series
+    asset_id: The ID of the asset in which the asset property was created
+    property_id: The ID of the asset property
+    region: AWS region (default: us-east-1)
+    client_token: A unique case-sensitive identifier for the request
+
+Returns:
+    Dictionary containing association response",Read,Write
+7af0353aa4e8959c,cancel_metadata_transfer_job,"Cancel a metadata transfer job.
+
+Args:
+    metadata_transfer_job_id: The ID of the metadata transfer job to cancel
+    region: AWS region (default: us-east-1)
+
+Returns:
+    Dictionary containing cancellation response",Financial,Destructive
+59788a044139dd4b,describe_bulk_import_job,"Get detailed information about a specific bulk import job in AWS IoT SiteWise.
+
+This function retrieves comprehensive details about a bulk import job including its configuration,
+status, progress, error information, and execution statistics.
+
+Args:
+    job_id: The unique identifier of the bulk import job (UUID format)
+    region: AWS region (default: us-east-1)
+
+Returns:
+    Dictionary containing:
+    - success: Boolean indicating operation success
+    - job_id: The job identifier
+    - job_name: The job name
+    - job_status: Current status of the job
+    - job_role_arn: IAM role ARN used by the job
+    - files: List of input files
+    - error_report_location: S3 location for error reports
+    - job_configuration: Job configuration details
+    - job_creation_date: When the job was created
+    - job_last_update_date: When the job was last updated
+    - adaptive_ingestion: Whether adaptive ingestion is enabled
+    - delete_files_after_import: Whether files are deleted after import
+    - Additional fields based on job status and execution
+
+Example:
+    # Get details for a specific job
+    result = describe_bulk_import_job(
+        job_id=""12345678-1234-1234-1234-123456789012""
+    )
+
+    if result['success']:
+        print(f""Job Status: {result['job_status']}"")
+        print(f""Job Name: {result['job_name']}"")",Read,Write
+b15d535d251e2d7d,cosmos,Work with Azure Cosmos DB accounts and containers,Write,Read
+2bed04175722f90e,datadog,Work with Azure Native ISV services including Datadog,Write,Other
+8dc378039f7380bd,foundry,Work with Azure AI Foundry models and deployments,Write,Read
+1e604424477e4604,servicebus,Work with Azure Service Bus messaging,Write,Read
+a5e08d768c0fe99f,sql,Work with Azure SQL Database servers and firewall rules,Write,Read
+0237f56195beed0e,mcp_ado_pipelines_get_build_changes,Get changes associated with a build,Read,Execute
+ef6a608755f64e8a,mcp_ado_pipelines_get_build_definition_revisions,Get revision history of a build definition,Read,Execute
+279cab0db3a6f2a2,mcp_ado_pipelines_get_build_definitions,List build/pipeline definitions in a project,Read,Execute
+578c0e9f6a8fea21,mcp_ado_pipelines_get_build_log,Retrieve complete logs for a build,Read,Execute
+7ac34a45222ce244,mcp_ado_pipelines_get_build_log_by_id,Get a specific build log by log ID,Read,Execute
+cef9ffe1915bac60,mcp_ado_pipelines_get_build_status,Get the status of a specific build,Read,Execute
+090813f60f6bf101,mcp_ado_pipelines_list_artifacts,List artifacts for a given build,Read,Execute
+ed5842e68cdb8f81,mcp_ado_pipelines_update_build_stage,"Update a build stage (cancel, retry, or run)",Execute,Write
+dad39af672faddcd,mcp_ado_repo_reply_to_comment,Reply to a pull request comment,Write,Read
+7d7e4a8d081469df,mcp_ado_testplan_show_test_results_from_build_id,Get test results for a specific build,Read,Execute
+ff3e3dedc627dc47,mcp_ado_wit_get_query_results_by_id,Execute a query and get results,Read,Execute
+4afab30a7f319dea,mcp_ado_wit_work_items_link,Link work items together,Write,Read
+53a66cc1b0a6e8fb,download_polyhaven_asset,Download and import a Polyhaven asset into Blender,Write,Read
+40407dfbb1284eab,download_sketchfab_model,Download and import a Sketchfab model,Write,Read
+938ad7873f2fccc2,checkout,"Initiate checkout for a cart. Requires idempotency key to prevent duplicate purchases. Returns payment_intent for native products, redirect URL for affiliate products, or pending_human_approval if above spending threshold.",Write,Read
+2d97aa9676825f80,brand_brandcode_auth,"Activate Brandcode Studio connection for saving and pushing brands. Preferred mode: ""activate"" displays a short code (e.g. BRAND-7K4X) for the user to enter at brandcode.studio/activate — no copy-paste of tokens needed. Also supports: ""status"" (check auth), ""login"" (magic link fallback), ""set_key"" (manual token), ""logout"" (clear credentials). Use when the user wants to save their brand to Studio or says ""activate"", ""connect to Brandcode"", or ""save my brand online"". NOT needed for extraction, preview, or brand_check — those work without auth.",Destructive,Write
+0a603537b5ac5edc,brand_brandcode_sync,"Sync local .brand/ with a connected Brandcode Studio brand. Two directions: ""pull"" (default) fetches the latest from Studio, delta-aware via syncToken. ""push"" uploads local changes to Studio (requires auth via brand_brandcode_auth). Requires a prior brand_brandcode_connect. Use when the user says ""sync brand"", ""push to Studio"", ""pull latest brand"", or ""update Studio"". Returns sync mode, changed areas, and sync token. NOT for initial connection — use brand_brandcode_connect. NOT for checking status — use brand_brandcode_status.",Write,Read
+78089870c7626a08,brand_deepen_identity,"Define visual identity rules beyond colors and fonts — composition energy, pattern language, illustration style, photography direction, signature moves, and anti-patterns (hard compliance rules). Session 2 interview with 6 sections. Mode 'interview' returns structured questions for missing sections. Mode 'record' saves answers. Use after Session 1 (core identity extracted). Anti-patterns become enforceable rules in brand_preflight. Returns section completion status.",Read,Write
+2a52a6574b4d9d55,brand_extract_messaging,"Audit how a brand currently sounds on its website — the first step in Session 3 (brand voice and messaging). Use when the user says 'analyze my voice', 'brand voice audit', 'how does my brand sound?', or 'start Session 3'. Analyzes voice fingerprint (formality, jargon density, active voice %, hedging), vocabulary frequency, claims quality, AI-ism detection, and messaging gaps. Writes .brand/messaging-audit.md. After this, run brand_compile_messaging to define how the brand *should* sound. Returns structured analysis with scores.",Read,Execute
+dc8b17614cfc21b9,brand_init,"Initialize a .brand/ directory with empty config scaffold. Low-level tool — prefer brand_start instead, which calls this automatically and also presents extraction options. Only use brand_init directly if you need to set up the directory without running extraction. Returns list of created files.",Write,Execute
+588d5e55c9b3f2a4,brand_preflight,"Check HTML/CSS against brand rules — catches off-brand colors, wrong fonts, missing logo, and anti-pattern violations (drop shadows, gradients, etc.). Pass an HTML string or file path. Mode 'check' (default) runs all compliance checks and returns pass/warn/fail per rule. Mode 'rules' lists all active preflight rules without checking content. Use after generating any visual content to validate brand compliance. Returns overall status and per-check details. NOT for scoring content copy — use brand_audit_content. NOT for brand directory validation — use brand_audit.",Destructive,Read
+2fd564317c1254ae,brand_preview,"Generate a visual proof page showing the brand applied to common UI patterns — color swatches, typography hierarchy, buttons, cards, and a WCAG contrast matrix. Writes .brand/brand-preview.html. Screenshot-ready, shareable, built from brand-runtime.json only. Use when the user says ""show me my brand"", ""preview the brand"", ""does this look right?"", or after extraction to validate results. Requires brand_compile to have run first. NOT the full report — use brand_report for comprehensive data.",Execute,Read
+a6d911137189d80d,brand_report,"Generate a portable HTML brand identity report with embedded logos, color swatches, typography, and tokens. The HTML is self-contained and works offline — upload it to any AI chat (Claude, ChatGPT, Gemini) as instant brand guidelines. Written to .brand/brand-report.html. Use after brand_compile. Returns file path, report summary (color/font/logo counts), and a ready-to-copy Brand Instructions text block.",Write,Read
+c0d9b586db44c427,cardiac_renew_key,Renew agent API key binding on Base mainnet (requires EIP-712 agent signature),Read,Write
+e6ef0bc76a9f8afc,plan_task,Generate a phased plan: preparation → perception → execution → verification,Write,Read
+e681f02715bcb0c3,task_planner,Decompose a complex instruction into ordered subtasks with time estimates,Write,Read
+35985798fc00fc1f,adapt.generate,Generate social adaptations for an article.,Read,Write
+7793b8c6c1b9b51a,article.generate,Generate a new article using the autopilot flow and current workspace settings.,Read,Write
+915ac68a18d15237,competitors.discover,Discover competitors by keyword set.,Write,Read
+37665c7d18880fa1,gaps.generate,Generate SEO/GEO content gap opportunities.,Read,Write
+70215e3a77296488,ingest.batch,Create ingestion jobs in batch mode for multiple URLs.,Write,Read
+2eca5e0c7887b2ff,leadmagnet.archive,Archive a lead magnet by ID.,Read,Write
+6df75f566e2ef756,leadmagnet.publish,Publish a lead magnet by ID.,Read,Write
+f52293705f707805,schedule.gaps,List schedule gaps for upcoming days.,Read,Write
+ef9b761f5cb14f12,schedule.list,List upcoming article/post/social schedule timeline.,Read,Write
+7ea97ee5be8e3255,seo.og_image.generate,Generate an Open Graph image artifact and return hosted URL for brand assets.,Read,Write
+360f542c815ecf99,session.create,Create and start an autopilot session.,Execute,Write
+35fd4509aad57909,shorts.generate,Generate shorts video and return poll instructions until final video URL is ready.,Read,Write
+ab1a6ba94e020ac6,shorts.merge,"Merge 2-4 short clips, apply subtitle phrases, and return final video URL.",Read,Write
+3f91b78db40ba24e,social.publish,"Publish, schedule, or cancel social adaptation publishing.",Destructive,Write
+fbdc25ab4d77b92d,webhooks.register,Register webhook endpoint for agent events.,Read,Write
+43d05e4d26986052,action_queue,,Write,Read
+c3e04d21d1bc6897,task_failed,,Write,Read
+eba1d068565b6fe1,vnc_command,,Write,Execute
+0382e3487f2fa5af,understand_image,"Analyze images with AI vision — screenshots, diagrams, UI mockups, error messages, charts, photos. Provide a URL or local file path to the image.",Other,Read
+75158f35c5f02e9a,hls_video_playback,"Fetch an HLS (HTTP Live Streaming) playlist for the specified video asset, with optional query parameters to [modify playback behavior](https://docs.mux.com/guides/modify-playback-behavior).",Write,Read
+1d34a3f8b19c4bcc,storyboard_meta_video_playback,"When using this tool, always use the `jq_filter` parameter to reduce the response size and improve performance.
+
+Only omit if you're sure you don't need the data.
+
+Fetch metadata for the [storyboard image in JSON format](https://docs.mux.com/guides/create-timeline-hover-previews#json), detailing the coordinates and time ranges of each thumbnail.
+
+# Response Schema
+```json
+{
+  type: 'string'
+}
+```",Write,Read
+fd89465447bdd31b,storyboard_video_playback,Fetch a storyboard image composed of multiple thumbnails for use in [timeline hover previews](https://docs.mux.com/guides/create-timeline-hover-previews).,Write,Read
+ec2273ad7ca35330,storyboard_vtt_video_playback,"When using this tool, always use the `jq_filter` parameter to reduce the response size and improve performance.
+
+Only omit if you're sure you don't need the data.
+
+Fetch metadata for the [storyboard image in WebVTT format](https://docs.mux.com/guides/create-timeline-hover-previews#webvtt), detailing the coordinates and time ranges of each thumbnail.
+
+# Response Schema
+```json
+{
+  type: 'string'
+}
+```",Write,Read
+f0b267aba8244071,transcript_video_playback,"When using this tool, always use the `jq_filter` parameter to reduce the response size and improve performance.
+
+Only omit if you're sure you don't need the data.
+
+Fetch a [transcript of an asset](https://docs.mux.com/guides/add-autogenerated-captions-and-use-transcripts#retrieve-a-transcript). This is only possible for assets with a text track generated using the [VOD generated captions feature](https://docs.mux.com/guides/add-autogenerated-captions-and-use-transcripts).
+
+# Response Schema
+```json
+{
+  type: 'string'
+}
+```",Write,Read
+2adcf2a151c9b038,compile,Generate executable SQL from models without running,Read,Execute
+936e4ad14d1b863c,parse,Parse and validate project files,Read,Execute
+d5a9b512e81bcbfe,show,Execute SQL and return results without persisting,Read,Execute
+6c85cbee266e52cd,test,Run tests to validate data and model integrity,Read,Execute
+fefdcffa1c731606,openHAB,openHAB MQTT integration details,Read,Write
+a45cd87606c95b68,refresh_monitors,Re-scan monitors and VCP capabilities,Write,Read
+626ad69ee24b03f8,dolores_hire_agent,Hire a Dolores agent by paying the hire fee. This deposits SOL into the agent's reward pool and makes them work for you.,Read,Write
+c05618595ceae0e9,dolores_new_memecoins,"Fetch newly launched memecoins on PumpFun from DexScreener live data. Returns real-time token info including price, market cap, volume, and contract address.",Execute,Read
+6bb7bf3747eb31c6,backup_projects,Backup Cloudflare projects to GitHub,Write,Read
+28daf6e2eadb79f3,faf_agents,Import/Export/Sync between AGENTS.md (OpenAI/Codex) and project.faf - AI interop!,Read,Write
+432c83312affe312,faf_conductor,Import/Export between conductor/ directory (Google Conductor) and project.faf - AI interop!,Read,Write
+740bb5c126d1847b,faf_cursor,Import/Export/Sync between .cursorrules (Cursor IDE) and project.faf - AI interop!,Read,Write
+b23b5e4b87fdbdd5,faf_gemini,Import/Export/Sync between GEMINI.md (Google Gemini CLI) and project.faf - AI interop!,Read,Write
+20d28d77a2c05b9f,minimal,Quick-start architecture assessment for pilots,Read,Execute
+071117a074a6b945,github_disable_pull_request_auto_merge,Remove auto-merge configuration for a pull request,Write,Destructive
+fd813110eaa30677,GOOGLECALENDAR_DUPLICATE_CALENDAR,"Creates a new, empty Google Calendar with the specified title (summary).",Read,Write
+cf778519c86bb35c,maps_geocode,Convert an address to coordinates,Read,Write
+19c01bcf02c6c172,maps_reverse_geocode,Convert coordinates to an address,Read,Write
+488ad918cb67d494,GOOGLESUPER_COMPUTE_ROUTE_MATRIX,Calculates travel distance and duration matrix between multiple origins and destinations using the modern Routes API; supports OAuth2 authentication and various travel modes.,Read,Write
+c56b512d4fadd25b,GOOGLESUPER_DUPLICATE_CALENDAR,"Creates a new, empty Google Calendar with the specified title (summary).",Read,Write
+8d7a68114ad5901c,make_listing_offer,"Make a job offer to a listing applicant. This creates a standard job from the listing and notifies the human. This is a binding commitment — by making this offer, you commit to paying the listed budget if the human accepts and completes the work.",Read,Write
+e8500dea738e4d94,request_activation_code,"Request an activation code (HP-XXXXXXXX) to post on social media for free BASIC tier activation. After posting, use verify_social_activation with the post URL.",Read,Write
+4187caa9b4a1e556,stop_stream,Stop a stream permanently and mark the job as completed. Can be called by agent or human on STREAMING or PAUSED jobs.,Destructive,Execute
+55b37bbc737ebbda,browser_use_agent,"This tool employs an open-source browser automation agent optimized specifically for fast, efficient, and cost-effective browser tasks using a cloud browser. It requires explicit, detailed instructions to perform highly specific interactions quickly.
+
+Optimal for tasks requiring:
+- Precise, explicitly defined interactions and actions
+- Speed and efficiency with clear, unambiguous instructions
+- Cost-effective automation at scale with straightforward workflows
+
+Best suited use cases include:
+- Explicitly defined registration and login processes
+- Clearly guided navigation through web apps
+- Structured, step-by-step web scraping with detailed guidance
+- Extracting data via explicitly specified browser interactions
+
+You must provide extremely detailed step-by-step instructions, including exact elements, actions, and explicit context. Clearly define the desired outcome for optimal results. Returns the completed result or an error message if issues arise.
+
+Note: This agent trades off flexibility for significantly faster performance and lower costs compared to Claude and OpenAI agents.",Destructive,Read
+5b1f02be9e8a90fb,openai_computer_use_agent,"This tool utilizes OpenAI's model to autonomously execute general-purpose browser-based tasks with balanced performance and reliability using a cloud browser. It handles complex interactions effectively with practical reasoning and clear execution.
+
+Optimal for tasks requiring:
+- Reliable, general-purpose browser automation
+- Clear, structured interactions with moderate complexity
+- Efficient handling of common web tasks and workflows
+
+Best suited use cases include:
+- Standard multi-step registration or form submissions
+- Navigating typical web applications requiring multiple interactions
+- Conducting structured web research tasks
+- Extracting data through interactive web processes
+
+Provide a clear step-by-step description, necessary context, and expected outcomes. Returns the completed result or an error message if issues arise.",Destructive,Write
+8e23fd8b48dbd77a,invarium_dashboard,"Show the Invarium dashboard overview.
+
+Displays fleet health, pass rate, failure breakdown, recent test runs,
+and quick stats — the same data shown on the web dashboard.
+
+WHEN TO USE: When the user asks for an overview of their testing status,
+or at the start of a session to understand the current state. Also useful
+after completing a testing cycle to show the overall impact.
+
+No parameters required. Returns overview for the authenticated user.",Execute,Read
+4bf5a121bf9106e2,invarium_manage_scenario,"Manage a scenario: update its fields, delete it, or toggle its active state.
+
+IMPORTANT: Deletion is permanent and irreversible. When action=""delete"",
+you MUST first call this tool WITHOUT confirm=true. The tool will return
+a confirmation prompt listing the scenario to be deleted. Show this to
+the user and only re-call with confirm=true after they explicitly approve.
+NEVER set confirm=true on the first call. NEVER delete multiple scenarios
+in a loop without showing the user the full list and getting one explicit
+confirmation for the batch.
+
+Args:
+    scenario_id: ID of the scenario to manage.
+    action: Operation to perform — ""update"", ""delete"", or ""toggle"".
+    name: New name for the scenario (update only).
+    description: New description for the scenario (update only).
+    expected_behavior: New expected behavior text (update only).
+    tags: JSON array string of tags, e.g. '[""auth"", ""edge-case""]' (update only).
+    confirm: Required for delete — must be true to execute deletion.
+        First call without confirm to get a confirmation prompt.
+
+Returns:
+    A confirmation string on success, or an error message on failure.",Destructive,Write
+cfbf178cf2b1f305,invarium_sync_results,"Sync test results from your IDE to the Invarium dashboard.
+
+After running test cases locally, use this tool to upload the results.
+Creates a new test run or appends to an existing one.
+
+This tool is called automatically during test execution. No user
+confirmation is needed. For streaming mode, call with create_empty=True
+first to get the dashboard link, then stream results as tests complete.
+
+WHEN TO USE: Automatically called during test execution setup
+(create_empty=True) and by the trace library during test runs.
+AFTER THIS: Show the test run link. Then fetch analytics with
+invarium_get_test_run and invarium_get_agent to present pass rate,
+AQS score, and intelligent next-step recommendations.
+
+For streaming test execution: call with create_empty=True and results=""[]""
+to create an empty test run. Returns test_run_id + dashboard URL. Then
+run the test script in the background — it streams results to the MCP
+server one at a time.
+
+Args:
+    agent_name: Name of the agent whose tests were run.
+    results: JSON array of test result objects. Each must contain:
+        scenario_id (string) — ID of the test case.
+        user_message (string) — The input sent to the agent.
+        agent_response (string) — The agent's actual output.
+        Optional: tools_called (array of objects, each with required 'name'
+        and optional 'parameters'), passed (boolean), notes (string),
+        latency_ms (number — execution time in milliseconds),
+        error_message (string — error details for failed cases).
+    test_run_id: Optional existing test run ID for incremental sync.
+        If provided, results are appended to that run.
+        If omitted, a new test run is created.
+    name: Optional human-readable name for the test run
+        (e.g. ""Smoke Test — Mixed Complexity""). Helps identify
+        runs on the dashboard.
+    source: Label for where tests were executed. Valid values: ""mcp"",
+        ""ci"", ""vscode"", ""cli"", ""api"" (default: ""mcp"").
+    create_empty: If True, create an empty test run with no results.
+        Returns test_run_id + dashboard URL for streaming mode.
+        The results parameter is ignored when this is True.
+    expected_total: Expected number of test results for streaming mode.
+        Tells the backend how many results to expect before marking
+        the run as completed. Use with create_empty=True.
+
+Returns:
+    A summary string with test run ID and dashboard link on success,
+    or an error message on failure.",Execute,Write
+9fc9759074af79bb,inverspec_phase_2_data_model,"Returns the Phase 2 prompt template for data models, persistence, and validation. For large primary schemas (>20 tables), the prompt instructs domain-split Mermaid ER diagrams. Run after Phase 1 architecture map is complete.",Read,Execute
+2c0a2155dfd68f56,inverspec_phase_7_maintenance,Returns the Phase 7 prompt template for partial updates to an existing technical specification after code changes. Maps changed file patterns to the right spec phase and rewrites only affected sections. Requires a completed initial spec (Phases 0–6).,Execute,Read
+63e7fa69053947a1,enter_position,Enter an open pool with a position on one side of a token pair. Requires an agent API key (from create_agent). Earlier entries earn a higher conviction multiplier.,Read,Write
+1e22b36fca1da4f7,toggle_agent,"Pause or resume an agent's automatic strategy execution. When paused, the agent stops entering pools via cron. Manual entries via enter_position still work.",Read,Write
+85b124248dd7df23,api_call,Make an HTTP request to any endpoint,Execute,Write
+2bf5ba56039d15ea,db_query,Execute a read-only database query,Read,Execute
+2375245432225632,aide_discover,"Scan for .aide spec files in this project. Returns a tree map of where specs live, following progressive disclosure.
+
+Without a path: returns a lightweight project-wide map — file locations and types only, no content. Use this once to understand the project's spec architecture.
+
+With a path: the response opens with the ancestor chain — the cascading intent lineage from project root down to the target directory, with each ancestor showing its description and alignment status (aligned/misaligned when set). The ancestor chain gives you the full inherited context before you read a single spec body. After the ancestor chain comes the detailed subtree of the target directory — summaries extracted from file content and anomaly warnings. Use this to drill into the area you're working on.
+
+.aide files are progressive disclosure specs that live next to orchestrator code — they contain intent (strategy, implementation contracts, anti-patterns), research (sources, data, patterns), or QA checklists (todo). Read .aide files BEFORE reading code — they are the context layer between folder structure and implementation details.
+
+File types (.aide, intent.aide, research.aide, plan.aide, todo.aide):
+- .aide — Intent spec (default). Strategy, contracts, anti-patterns.
+- intent.aide — Same as .aide, used only when research.aide exists in the same folder.
+- research.aide — Raw research. Sources, data points, pattern synthesis.
+- plan.aide -- Architect's implementation plan. Checkboxed steps for the implementor.
+- todo.aide — QA re-alignment document. Captures where implementation drifted from intent.
+
+Never have both .aide and intent.aide in the same folder.",Write,Read
+73f0a5e4bb45fca5,aide_init,"Bootstrap the AIDE development environment into a project. Returns structured JSON for agent consumption — not prose.
+
+The tool uses a two-call pattern for progressive disclosure:
+
+**First call (no `category` param):** Returns a lightweight summary — every step with `name`, `status` (would-create/would-overwrite/would-skip/exists), `category`, and `filePath`, but NO `content` fields. Also returns `brainHints` (brain root candidates) and detected `framework`. Use this to understand what needs to be done and which categories require user prompts.
+
+**Second call (with `category` param):** The tool writes all `would-create` AND approved `would-overwrite` files directly to disk itself and returns a manifest — steps with `filePath`, `status` (`created`, `overwritten`, or `exists`), and `name`, but NO `content`. `would-skip` steps stay `would-skip` in the manifest (tool writes nothing for them). The agent never sees file content and never uses the Write tool for new files.
+
+**Exception — MCP steps:** For MCP steps, the manifest includes `prescription` data (key name and entry object) so the agent can read the existing config, merge, and write. The tool never touches MCP config directly.
+
+**Exception — brain category:** When calling with `category=brain`, also pass `brainPath` with the user-confirmed brain root path. The tool creates the brain root scaffold directories directly.
+
+**Exception — IDE VS Code steps:** IDE steps that need external tooling (VS Code CLI) return instructions for the agent to execute, since those aren't simple file writes.
+
+**Agent branch logic — silent-on-create, prompt-on-overwrite:**
+
+After the first call, walk the categories using this rule:
+- **Pure-create category** (all steps are `would-create`, `would-skip`, or `exists`): apply silently by calling with `category=X` immediately — no AskUserQuestion. A category with nothing on disk to overwrite has no decision the user can inform.
+- **Overwrite-bearing category** (any step is `would-overwrite`): pause and use AskUserQuestion with structured options. Name the files that would be overwritten. If the user approves, call with `category=X` — the tool overwrites and returns `overwritten` in the manifest. If the user declines an overwrite but wants the new files, call with `category=X` — the tool writes only `would-create` steps; the `would-overwrite` step stays `would-overwrite` in the manifest.
+- **Inherent-decision categories** (framework, brain root path, MCP config merge, IDE choice): always use AskUserQuestion regardless of disk state. These are not file-write decisions — filesystem contents cannot resolve them.
+
+**IMPORTANT — one-at-a-time wizard pattern using AskUserQuestion:**
+Do NOT present a summary table of all categories. Do NOT offer ""all"" as an option. Do NOT ask conversational questions — use the `AskUserQuestion` tool with structured options at every pause point.
+
+1. Call without `category` first to get the metadata
+2. Present ONLY the detected framework — use AskUserQuestion with Yes/{alternatives} options. STOP.
+3. Walk categories in order: methodology, commands, agents, skills, mcp, brain, ide, readme. For each:
+   - Pure-create: apply silently (call with `category=X`), report results, move to next.
+   - Overwrite-bearing: use AskUserQuestion naming the would-overwrite files. STOP. Wait for selection, then call with `category=X`. Report manifest (created N, overwrote M). Move to next.
+   - Inherent decision: always use AskUserQuestion. STOP.
+4. For brain: use AskUserQuestion with brainHints as labeled options (user can pick Other for custom path). STOP. Then call with `category=brain` and `brainPath`.
+5. For MCP: use AskUserQuestion with Merge/Skip options. Merge the `prescription` entry into the existing config yourself (read → merge → write). STOP.
+6. For IDE: use AskUserQuestion with multiSelect for Zed/VS Code/Neither. STOP.
+
+Each pause point is ONE AskUserQuestion → wait for selection → then proceed. Never show multiple categories at once. Never ask open-ended conversational questions.",Execute,Read
+956d3722a1d12136,aide_upgrade,"Compare the AIDE methodology artifacts in this project against the canonical versions and return structured JSON results grouped by category. Use this when the user asks to update AIDE, sync AIDE, refresh AIDE, check for AIDE updates, or bring AIDE up to date. This is NOT for editing user .aide specs — it inspects methodology infrastructure only.
+
+The tool uses a two-call pattern for progressive disclosure:
+
+**First call (no `category` param):** Returns a lightweight summary — every category with file names, statuses, and counts, but NO file content. Use this to understand what has drifted and present a summary to the user. Ask which categories they want to apply.
+
+**Second call (with `category` param):** The tool writes all differs/missing files directly to disk itself and returns a manifest — file results with `filePath`, `status` (`""updated""`, `""created""`, or `""unchanged""`), and `name`, but NO `canonicalContent`. The agent never sees file content and never uses the Write tool for methodology files.
+
+Repeat the second call for each category the user confirms.
+
+As the calling agent, you must:
+1. Call without `category` first to get the summary
+2. Present each drifted category (differs/missing) and ask the user which to apply
+3. For each confirmed category, call again with `category=X` — the tool writes the files and returns a manifest. Report what was updated/created to the user.
+4. For the `mcp` category, the manifest still includes `prescription` data — merge the entry into the existing MCP config yourself (read → merge → write). If `malformed`, tell the user — do not overwrite.
+5. For `ide`, the manifest may include `instructions` for VS Code extension install — execute that command for the user. Zed config is written directly by the tool.
+6. For `brain`, `category=brain` never writes; the manifest entry carries an `instructions` field directing the agent to invoke `/aide:brain config`, which is the single canonical home for brain.aide creation.
+
+**IMPORTANT — one-at-a-time wizard pattern using AskUserQuestion:**
+Do NOT present all categories at once. Walk the user through ONE category at a time using AskUserQuestion with Yes/Skip options. Stop after each question and wait for confirmation before calling with that category.
+
+Categories: pointer-stub, methodology-docs, version-metadata, commands, agents, skills, mcp, ide, readme, brain.
+
+Upgrade surface (user code and user .aide specs are never touched):
+- AIDE pointer stub in the agent config file
+- Canonical methodology docs under .aide/docs/
+- versions.json metadata under .aide/docs/
+- Slash commands for all pipeline phases
+- Pipeline agent files, skill templates
+- MCP server entry in the project's MCP config
+- IDE file association config (Zed settings, VS Code extension)
+
+Supports Claude Code, Cursor, Windsurf, and Copilot. Auto-detects the framework or accepts an override.",Execute,Write
+f04432d281241a0d,upvote,Upvote a forum thread (requires agent token),Read,Write
+39beb9698019b85d,output,"Set output format: text, json, or full",Read,Write
+0f1ae6ff788527d7,kit_remove_tag_from_subscriber,Remove a tag from a subscriber,Write,Destructive
+9162d7658e44ee30,argument_validation,Analyse arguments for logical fallacies,Execute,Read
+ba6f4d0297aa4da4,code_review_deep,"Review code for security, performance, and quality",Execute,Read
+487646223b1e62a9,create_function_schema,Generate JSON Schema for function calling,Execute,Write
+2de239200d1232c6,creative_ideation,Generate creative ideas with feasibility analysis,Execute,Read
+27cb77f62fccfbb6,debug_with_reasoning,Debug code with step-by-step DeepSeek analysis,Execute,Read
+3db98e8b4d01b1a1,explain_like_im_five,Explain complex topics in simple terms via DeepSeek,Execute,Read
+8bb37800946ae606,function_call_debug,Debug function calling issues via DeepSeek,Execute,Read
+629c590131759447,mathematical_proof,Prove mathematical statements via DeepSeek,Execute,Read
+d5009973ec54c9a9,pair_programming,Interactive coding assistance via DeepSeek,Execute,Read
+8d835410f0ee32a6,research_synthesis,Research topics and create structured reports,Execute,Write
+599e85fbe52a123b,strategic_planning,Create strategic plans with reasoning analysis,Execute,Write
+219dba56672478ce,ai_interaction_log,Log user corrections and learning data,Write,Read
+8e472c42a4421af6,Auto-resolution,Auto-resolve high-confidence merge conflicts,Execute,Write
+73c27a933c9df517,directive_executions,Record directive execution statistics,Write,Read
+6ee28a5dfd1ac26d,directive_helpers,Map directives to helper functions,Write,Read
+c3e82921422093bc,directive_implementations,Link directives to generated code files,Write,Read
+d75e2eec3438b0a6,directive_preferences,Override per-directive behaviour settings,Write,Read
+0250e293a1c1e6c1,fp_flow_tracking,Track FP compliance history,Write,Read
+3b476c4bad72cdf1,source_files,Track user directive source files,Write,Read
+9df0f6043d385f95,repurpose_content,"Repurpose content into platform-specific formats. Takes a blog post, transcript, or article and generates optimized versions for Twitter/X, LinkedIn, Substack, email, and video. Requires a CONTENT_REPURPOSER_API_KEY.",Other,Read
+5e8bdefeb056d2b5,gossip_bug_feedback,File a GitHub issue on the gossipcat repo from an in-session bug report. Dedupes against open issues. Requires authenticated gh CLI.,Write,Read
+b910f209734703f4,gossip_collect,Collect results from dispatched tasks. Waits for completion by default. Use consensus: true for cross-review round.,Write,Read
+fcd2bf5f400a6c11,gossip_config,"Manage runtime feature-gate flags stored in .gossip/runtime-flags.json. Actions: list (show all flags + source), get (one flag), set (write flag), unset (remove flag), reload (discard cache after hand-edit).",Destructive,Write
+0690951c86b3a2eb,gossip_dispatch,"Dispatch tasks to agents. mode:""single"" (default) sends to one agent. mode:""parallel"" fans out to multiple agents. mode:""consensus"" dispatches with cross-review instructions. Returns task IDs for collecting results.",Write,Read
+8f9b248ba26e71b4,gossip_format,Return the canonical CONSENSUS_OUTPUT_FORMAT block. Use this when you need to write an ad-hoc Agent() prompt for a native subagent that should produce findings the consensus engine can parse. Paste the returned string into your prompt verbatim — the format trains the agent to emit <agent_finding> tags instead of prose.,Write,Read
+ce0e1022eb93dd5b,gossip_relay,Feed a native agent result back into the gossipcat relay. Call this after a Claude Code Agent() completes a task dispatched via gossip_dispatch or gossip_run. Enables consensus cross-review and gossip for native agents.,Write,Execute
+063d7ee4c52469c6,gossip_relay_cross_review,Feed native agent cross-review result back into a pending consensus round. Called after dispatching Agent() for cross-review.,Write,Read
+c6d4f6847b2601a1,gossip_remember,"Search an agent's archived knowledge files, or manage the memory sidecar index.",Write,Read
+407637bd43ead135,gossip_signals,"Record or retract consensus performance signals. Use action ""record"" (default) to record signals after cross-referencing agent findings — call IMMEDIATELY when you verify. Use action ""retract"" to undo a previously recorded signal.",Write,Read
+976204d9bb7ddc0f,gossip_skills,"Manage agent skills. Actions: list (show skill index), bind (attach skill to agent), unbind (remove skill from agent), build (create skills from gap suggestions), develop (generate skill from ATI competency data), prune (drop skill-index entries for agents no longer in config.json).",Destructive,Write
+6bdc3c3c7dc470f7,wopee_dispatch_analysis,"Create a new analysis suite AND dispatch an AI crawling agent in one step. The agent opens a real browser, navigates from the starting URL, discovers pages, and maps the application structure. Use this when you want to auto-analyze a web app — it combines suite creation and crawling. Use wopee_create_blank_suite instead if you want to manually populate the suite. Optionally accepts starting URL, login credentials, cookie preferences (ACCEPT_ALL, DECLINE_ALL, IGNORE), custom variables, and free-text instructions to guide the crawl. Not idempotent: each call creates a new suite and starts a new crawl. Side effects: creates a suite and execution records on the platform. Rate limit: 10 seconds between dispatches per project; concurrent calls auto-retry with exponential backoff. Returns the created suite object on success.",Write,Execute
+50ecd66ebf150251,payouts,Execute Cashfree payout operations,Financial,Execute
+03324bd5cec56749,esbuild,"Runs the esbuild bundler and returns structured errors, warnings, and output files.",Execute,Read
+d7c63574eb30a606,nx,Runs Nx workspace commands and returns structured per-project task results with cache status.,Execute,Read
+a8a588bc5ee64877,rollup,Runs Rollup bundler and returns structured bundle output with errors and warnings.,Execute,Read
+6c42ea245ee6dd2f,tsc,"Runs the TypeScript compiler and returns structured diagnostics (file, line, column, code, message). Note: In compact mode, diagnostics are trimmed to file, line, and code — column and message fields are omitted to save tokens.",Write,Execute
+d74f626554dc48f3,turbo,Runs Turborepo tasks and returns structured per-package results with cache hit/miss info.,Execute,Read
+20bb6bd92d09b71b,blame,"Shows commit annotations for a file, grouped by commit. Returns structured blame data with deduplicated commit metadata (hash, author, email, date) and their attributed lines.",Read,Write
+8f59c278702588e8,branch,"Lists, creates, renames, or deletes branches. Returns structured branch data.",Read,Destructive
+7c3533c102715996,checkout,"Switches branches or restores files. Returns structured data with ref, previous ref, whether a new branch was created, and detached HEAD status.",Write,Read
+b468dcc6a8f115aa,diff,Returns file-level diff statistics as structured data. Use full=true for patch content.,Write,Read
+268d3f8408ef26eb,log-graph,Returns visual branch topology as structured data. Wraps `git log --graph --oneline --decorate`.,Write,Read
+a28d690aad7b0cda,rebase,"Rebases the current branch onto a target branch. Supports abort, continue, skip, and quit for conflict resolution. Returns structured data with success status, branch info, conflicts, and rebased commit count.",Write,Execute
+b3199bd0561db8d5,reflog,"Returns reference log entries as structured data, useful for recovery operations. Also supports checking if a reflog exists.",Write,Read
+2d4901d7109a1877,worktree,"Lists, adds, removes, locks, unlocks, or prunes git worktrees for managing multiple working trees. Returns structured data with worktree paths, branches, and HEAD commits.",Read,Destructive
+876d4002bd5dad89,head,"Makes an HTTP HEAD request via curl and returns structured response headers (no body). Use to check resource existence, content type, or cache headers. SECURITY: URLs targeting private/reserved IPs are blocked (SSRF protection). The proxy parameter routes traffic through an external proxy — use only with trusted proxies.",Write,Read
+f5aac56bab2493c1,request,"Makes an HTTP request via curl and returns structured response data (status, headers, body, timing). SECURITY: URLs targeting private/reserved IPs are blocked (SSRF protection). The proxy parameter routes traffic through an external proxy — use only with trusted proxies. File uploads via form @filepath are blocked by default (set PARE_HTTP_ALLOW_FILE_UPLOAD=true to allow).",Write,Read
+344a26b94a6b5138,http-options,Make an HTTP OPTIONS request to a specified URL to check available methods and headers. Supports secret substitution using {secrets.key} syntax in URL and headers where 'key' corresponds to HAL_SECRET_KEY environment variables.,Write,Read
+3617d070986d9108,key_protect_unwrap_key,Unwrap (decrypt) a wrapped data encryption key using a root key,Write,Read
+028120a7b5f84532,airdrop_sol,Request SOL airdrop (devnet/testnet only),Write,Read
+15359c13e451af09,burn_tokens,Burn tokens from a wallet,Destructive,Read
+fdf1314e4b8d82ab,close_token_account,Close a token account and reclaim rent,Destructive,Write
+eeb4b29996d873b8,freeze_account,Freeze a token account,Write,Read
+b42cf00ebced4d1a,mint_tokens,Mint tokens to a wallet address,Write,Read
+67207a8ea89ba3ff,thaw_account,Thaw (unfreeze) a token account,Write,Read
+5e447adfac135ca8,audit_keyboard,"Audit keyboard tab order, focus visibility, jumps, skip links, and focus traps.",Write,Read
+3fa00128f4c0feeb,audit_site,Crawl internal pages and aggregate accessibility violations across the site.,Write,Read
+e53ade88e08df696,browser_console_messages,Returns all console messages,Write,Read
+2767baaf14527f37,browser_drag,Perform drag and drop between two elements,Write,Read
+6605430091f1f9f8,browser_evaluate,Evaluate JavaScript expression on page or element,Write,Read
+25639c4e1fdd424a,browser_navigation_timeout,Sets the timeout for navigation and page load actions. Only affects the current tab and does not persist across browser context recreation.,Write,Read
+b5b5b6af378f432f,browser_network_requests,Returns all network requests since loading the page,Write,Read
+e97895b8e6f5d4b4,scene_diagnose,"Diagnose lights and scenes. Tests connectivity, response times, identifies problems with scenes (null values, missing lights, etc.), and provides recommendations. If test_connectivity=true, REQUIRES user_confirmed=true because it toggles lights.",Write,Read
+6348c7da3fecd24a,ask-gemini-edit,"Send a code edit request to Gemini CLI and get structured OLD/NEW edit blocks back. Gemini analyzes the files and returns precise, applicable code changes. Use this when you want Gemini to suggest specific code modifications rather than just analysis.",Read,Write
+df66ae7ef002ca44,discover_api_endpoints,"List available endpoints at an API origin. Returns endpoint URLs with descriptions of what each does and the auth mode for each (paid or SIWX). Works with any origin, not just the registered ones.
+
+Call this when you need to see what routes are available at an origin — whether it's one of the registered origins or any other origin you've identified as useful. Treat the auth mode as guidance for what the route may require; fetch handles both SIWX and payment.
+
+The response always indicates whether guidance is available. Guidance is documentation published by the API provider explaining how endpoints work together, edge cases, and usage tips. compact guidance is included automatically; set include_guidance=true to force-include full usage documentation when you need to compose two or more endpoints or need clarification on how the origin works.",Write,Read
+47f2c868a1ea5859,redeem_invite,"Redeem an invite code for free USDC on Base. One-time use per code. Returns amount received and transaction hash. Use get_balance after to verify funds, or list_accounts if you need the per-network deposit links as well.",Write,Read
+2dde86995778ce15,asset_doctor,"Structured environment inventory — MCP equivalent of `p2a doctor`. Returns native-dependency status (sharp, vtracer, potrace, png-to-ico, satori, resvg-js, tesseract.js, svgo), free-tier routes ranked best-first, paid-provider keys, paste-only providers, pipeline extension URLs, which modes are available right now, and a concrete 'what to try next' suggestion list. Read-only by default. Pass check_data=true to also run the model-registry/routing-table integrity check. Pass auto_fix=true to install missing native binaries (Homebrew / cargo / scoop — never sudo); pair with auto_fix_dry_run=true to preview without executing.",Execute,Read
+c99c7809758df6e2,asset_enhance_prompt,"Classify an asset brief, route to the right model, rewrite the prompt in that model's dialect, and report which execution modes are available (inline_svg / external_prompt_only / api). Returns an AssetSpec JSON including modes_available, optional svg_brief (for inline_svg), optional paste_targets (for external_prompt_only), and — when the brief leaves a material ambiguity — a `clarifying_questions[]` array the host LLM should surface via AskUserQuestion (or the equivalent) BEFORE calling a generator. Each entry has {id, header, question, options[], required, why}. Read-only; idempotent; no network.",Read,Write
+906de2b19df54abd,asset_ingest_external,"Ingest an image the user generated in an external tool (Midjourney, Nano Banana, Ideogram web, Recraft, Flux Playground, etc.) and run the matte → vectorize (where applicable) → tier-0 validation pipeline. The round-trip endpoint for external_prompt_only mode.",Execute,Read
+372729ac7b9524af,asset_init_brand,"Scaffold brand.json in the project root + ensure the assets dir exists. MCP equivalent of the `brand.json` portion of `p2a init`. Auto-detects the framework (Next.js, Expo, Flutter, Xcode, Astro, Vite, Remix, Nuxt, React Native, Electron, Node) and returns platform hints. Deliberately does NOT do IDE MCP registration — that's the one piece the user handles once at install time via a terminal. Call this at the start of a new project so subsequent generator calls have a brand source-of-truth and a known output dir.",Execute,Read
+c56cac9ccdf4293c,asset_nine_slice,Emit a 9-slice config + CSS border-image snippet + Unity/Godot/Phaser/PixiJS-ready numbers from one image and 4 pixel offsets. Optionally also emit an Android .9.png with the 1px stretchable-region encoding. MCP equivalent of `p2a nine-slice <image>`.,Write,Read
+c8a3037332d3afaf,asset_sprite_sheet,"Pack a directory of PNG/WEBP/JPG frames into one sprite sheet + TexturePacker-compatible JSON atlas (works in Phaser, PixiJS, Three.js, Godot, Unity via a light importer). MCP equivalent of `p2a sprite-sheet <dir>`. Offline, no API key.",Write,Read
+d8f72d1fb7d892b7,asset_train_brand_lora,"Train a brand-consistent LoRA from 20-50 sample images, returning a `lora_id` the `comfyui-*` and SDXL-family providers can reference. Requires a user-owned training endpoint (Modal / Runpod / self-host) at PROMPT_TO_BUNDLE_MODAL_LORA_TRAIN_URL. Phase-4 scaffold: the MCP tool does the packaging, validation, and HTTP; the user owns the deployment and pricing. See docs/research/06-stable-diffusion-flux/6d-lora-training-for-brand-style.md.",Write,Execute
+66e0f54025203d5a,asset_upscale_refine,"Upscale / refine an image, asset-type-aware. DAT2 for flat logos/icons, Real-ESRGAN/SUPIR for photoreal, img2img for diffusion polish. Lanczos fallback.",Write,Read
+c14c325b47954621,asset_validate,"Run tier-0 deterministic validators on an asset (dimensions, alpha presence, checkerboard-pattern heuristic on tile-luma alternation, safe-zone bbox, palette ΔE2000 against brand, WCAG contrast of brand primary vs light and dark tabs, OCR Levenshtein against intended_text). Optional tier-2 VLM-as-judge via PROMPT_TO_BUNDLE_VLM_URL.",Read,Execute
+875aa06b8c9e6fac,asset_vectorize,"Convert a raster image to SVG. Tries in order: Recraft /vectorize (if PROMPT_TO_BUNDLE_RECRAFT_VECTORIZE_URL is set), vtracer on PATH, potrace on PATH, then a built-in posterize run-length fallback. Passes all output through SVGO when installed.",Execute,Write
+f4b7cc8451846204,muse_batch,"Executes multiple tool operations in batch. Actions: execute (run batch), preview (plan without executing), status (check job status), cancel (stop running job), history (list past jobs). Supports sequential and parallel execution with dependency management.",Destructive,Execute
+a90ca0c80d1f1634,muse_collect_code_context,"Collects code blocks and conversation summaries into a structured context for documentation. Supports automatic language detection, duplicate removal, and statistics.",Write,Read
+8d9fff502c351858,muse_session_stats,"Provides analytics and insights about coding sessions. Actions: overview (summary stats), languages (language breakdown), timeline (activity over time), tags (tag analysis), productivity (work patterns), trends (compare periods).",Write,Read
+cf3e066ca99ea8a9,muse_summarize_design_decisions,"Extracts and analyzes key architectural and design decisions from conversation logs. Supports both English and Korean, with importance scoring and keyword extraction. Set useAI=true for Claude-powered enhanced analysis.",Write,Read
+38ee419729f3298a,Self-contained,"Includes bundled FFmpeg binary, no system install needed",Read,Write
+2c6d2e9eb06ad62e,enqueue_image_files,"複数のローカルファイルをアップロードセットに一括でアップロードします。ファイルパスのリストを指定してください。対応形式: PDF, JPEG, PNG",Read,Write
+162ee5700c961935,thrd.billing_checkout_self,Create a Stripe checkout session for the authenticated tenant to upgrade plan.,Write,Read
+e193ddecdaf27146,thrd.send,Initiate a new outbound email. Requires idempotency. Tier 3 cold outbound may return por_required. High-risk inbound context may require security_ack_token.,Read,Write
+352293feb9f9f2af,ibge_noticias,"Searches IBGE news and press releases.
+
+Features:
+- Latest news and releases
+- Search by specific term
+- Filter by period (start and end date)
+- Filter by type (release or news)
+- Filter featured news
+- Pagination support
+
+Examples:
+- Latest 10 news: (no parameters)
+- Search census: busca=""censo""
+- 2024 news: de=""01-01-2024"", ate=""12-31-2024""
+- Releases only: tipo=""release""",Execute,Read
+5bdc6875ab5685ed,vibe_inbox,See your unread messages and recent threads.,Write,Read
+8b0b4cd7a4c5cda2,vibe_status,"Set your mood/status. Options: shipping, thinking, afk, debugging, pairing, deep, celebrating, struggling, clear",Read,Write
+b77d246ebf5ca05b,vibe_who,See who's online and what they're building.,Write,Read
+3b3dbf0b57c9fc05,openai_chat,"Chat completions with OpenAI GPT models (gpt-4o, gpt-4-turbo, gpt-3.5-turbo, etc.).",Read,Write
+1dd5303562d195d6,openai_compatible_chat,"Chat completions with **any** OpenAI-compatible API (Azure OpenAI, Ollama, vLLM, etc.).",Read,Write
+9688cb4bb77dc6d2,openrouter_chat,"Unified API access to 100+ models from multiple providers (OpenAI, Anthropic, Google, Meta, etc.).",Read,Write
+c9b9e34e95fbcd81,openwebui_chat,OpenAI-compatible interface for self-hosted LLMs.,Read,Write
+6551a7d0fe2e9e43,calculate_wire_gauge,"Calculate the recommended wire gauge / cable cross-section for a DC circuit. Considers both ampacity (current carrying capacity) and voltage drop to recommend the optimal cable size. Also returns total resistance, power loss, and a fuse recommendation. Supports copper conductors from 0.75 mm² (18 AWG) to 240 mm² (300 MCM).",Destructive,Read
+9bef8c2575fddf67,protect_branch,Protect a branch (or wildcard pattern) with configurable push/merge access levels and force-push settings to enforce merge-only workflows,Write,Read
+78e005fe0a07a5fd,accept_join_request,Accept a join request for your team,Read,Write
+4f2b9c6fe17ea19f,resign_board_game,Resign a board game,Read,Write
+80582689b9004eb3,upgrade_to_bot,Upgrade to Bot account. WARNING: This is irreversible and the account must not have played any games.,Destructive,Write
+1cd3ae7ac1c1c031,AoT,"Atom of Thoughts (AoT) is a tool for solving complex problems by decomposing them into independent, reusable atomic units of thought.
+Unlike traditional sequential thinking, this tool enables more powerful problem solving by allowing atomic units of thought to form dependencies with each other.
+
+When to use:
+- Solving problems requiring complex reasoning
+- Generating hypotheses that need verification from multiple perspectives
+- Deriving high-confidence conclusions in scenarios where accuracy is crucial
+- Minimizing logical errors in critical tasks
+- Decision-making requiring multiple verification steps
+
+Atom types:
+- premise: Basic assumptions or given information for problem solving
+- reasoning: Logical reasoning process based on other atoms
+- hypothesis: Proposed solutions or intermediate conclusions
+- verification: Process to evaluate the validity of other atoms (especially hypotheses)
+- conclusion: Verified hypotheses or final problem solutions
+
+Parameter descriptions:
+- atomId: Unique identifier for the atom (e.g., 'A1', 'H2')
+- content: Actual content of the atom
+- atomType: Type of atom (one of: premise, reasoning, hypothesis, verification, conclusion)
+- dependencies: List of IDs of other atoms this atom depends on
+- confidence: Confidence level of this atom (value between 0-1)
+- isVerified: Whether this atom has been verified
+- depth: Depth level of this atom (in the decomposition-contraction process)
+
+Additional features:
+1. Decomposition-Contraction mechanism: 
+   - Decompose atoms into smaller sub-atoms and contract back after verification
+   - startDecomposition(atomId): Start atom decomposition
+   - addToDecomposition(decompositionId, atomId): Add sub-atom to decomposition
+   - completeDecomposition(decompositionId): Complete decomposition process
+
+2. Automatic termination mechanism:
+   - Automatically terminate when reaching maximum depth or finding high-confidence conclusion
+   - getTerminationStatus(): Return termination status and reason
+   - getBestConclusion(): Return highest confidence conclusion
+
+Usage method:
+1. Understand the problem and define necessary premise atoms
+2. Create reasoning atoms based on premises
+3. Create hypothesis atoms based on reasoning
+4. Create verification atoms to verify hypotheses
+5. Derive conclusion atoms based on verified hypotheses
+6. Use atom decomposition to explore deeper when necessary
+7. Present the high-confidence conclusion atom as the final answer",Execute,Other
+6e16d2d4d31716f8,AoT-light,"A lightweight version of Atom of Thoughts (AoT) designed for faster processing and quicker results.
+This streamlined version sacrifices some depth of analysis for speed, making it ideal for time-sensitive reasoning tasks.
+
+When to use:
+- Quick brainstorming sessions requiring atomic thought organization
+- Time-sensitive problem solving where speed is prioritized over exhaustive analysis
+- Simpler reasoning tasks that don't require deep decomposition
+- Initial exploration before using the full AoT for deeper analysis
+- Learning or demonstration purposes where response time is important
+
+Key differences from full AoT:
+- Lower maximum depth (3 instead of 5) for faster processing
+- Simplified verification process
+- Immediate conclusion suggestion for high-confidence hypotheses
+- Reduced computational overhead and response payload
+- Optimized for speed rather than exhaustive analysis
+
+Atom types and parameters are the same as the full AoT tool.",Execute,Other
+651efc74aa49f979,atomcommands,"A command tool to control the decomposition-contraction mechanism and automatic termination of Atom of Thoughts.
+  
+Use this tool to access advanced features of AoT:
+
+1. Decomposition (decompose): Decompose a specified atom into smaller sub-atoms
+2. Complete decomposition (complete_decomposition): Complete an ongoing decomposition process
+3. Check termination status (termination_status): Check the termination status of the current AoT process
+4. Get best conclusion (best_conclusion): Get the verified conclusion with the highest confidence
+5. Change settings (set_max_depth): Change the maximum depth limit
+
+Command descriptions:
+- command: Command to execute (decompose, complete_decomposition, termination_status, best_conclusion, set_max_depth)
+- atomId: Atom ID to use with the command (only required for decompose command)
+- decompositionId: ID of the decomposition process (only required for complete_decomposition command)
+- maxDepth: Maximum depth value to set (only required for set_max_depth command)",Execute,Read
+2218f4f8408aa604,scheduleDeployment,"🕐 Schedule a deployment to run at specific times or intervals.
+			
+			Set up automated execution of deployments using flexible scheduling options including:
+			- One-time execution at a specific date/time
+			- Recurring schedules using cron expressions
+			- Simple interval-based schedules (daily, weekly, monthly)
+			
+			**Perfect for:**
+			- Automated data processing workflows
+			- Regular report generation
+			- Periodic API data syncing
+			- Scheduled backup operations
+			- Time-based business process automation
+			
+			**Schedule Types:**
+			- 'once': Execute once at a specific datetime
+			- 'cron': Use cron expression for complex schedules
+			- 'interval': Simple recurring intervals (daily, weekly, monthly)
+			
+			**Examples:**
+			- Daily at 9 AM: schedule_type='interval', interval='daily', time='09:00'
+			- Every Monday at 2 PM: schedule_type='cron', cron_expression='0 14 * * 1'
+			- Once on Dec 25, 2024 at 10:30 AM: schedule_type='once', datetime='2024-12-25T10:30:00Z'",Write,Execute
+477a2fb7efe1da71,submitDeploymentRun,"Execute a deployed DataGen workflow with custom inputs.
+      
+      Use this to run pre-built workflows (like data processing pipelines, web scrapers, or automation scripts) that have been deployed as API endpoints. This starts an asynchronous execution - you'll get a run ID that you can monitor with 'checkRunStatus'.
+      
+      **Typical workflow:** 
+	  1. Use `validateDeploymentConnection` tool to validate the deployment and get the missing MCP or Secrets.
+      2. Use this tool to start a deployment
+      3. Get a run_uuid in response
+      4. Use `checkRunStatus` to monitor progress
+      5. Retrieve results when complete
+      
+      **Use cases:** Run data pipelines, execute scrapers, trigger automations, process files. 
+	  **Error handling:** If found any missing MCP or Secrets, try to run validate deployment connection tool to validate the deployment and get the missing MCP or Secrets.",Write,Execute
+c3e4243610fc091e,linear_unarchiveInitiative,Unarchive an initiative,Write,Read
+222cd85af68a2029,recall_memory,"Retrieve previously saved memories from persistent storage. Returns a JSON object with a memories array, each entry containing key, value, and type. Use this at the start of every session to restore context, installed skills, and user preferences. Returns an empty array if no memories exist. Filter by type to retrieve only specific categories of memories.",Execute,Read
+59c54c63720f954f,report_skill_usage,"Report the outcome of using a skill, generating a verifiable execution proof. Returns a JSON object with proof_id, verify_url, and shareable_text. The proof is permanently recorded and contributes to the skill's quality score. Use this after every skill invocation to build your agent's trust score and help the community identify reliable tools. Do not call this before actually using the skill. Requires the skill slug and a status indicating the outcome.",Destructive,Read
+3afd12696c541d9a,review_skill,Leave a rating and optional comment for a skill you have used. Returns a confirmation that the review was recorded. Reviews help other agents and humans decide whether to install a skill. Use this after using a skill to share your experience. Do not review skills you have not actually used. Ratings range from 1 (unusable) to 5 (excellent).,Write,Read
+c3be6675e8be7544,help,"Returns a complete guide to Local MCP: what it does, how it works, when to use the Cloud MCP connector vs the lmcp CLI, and what each tool in this connector is for. Call this first if you are unsure how to proceed.",Write,Read
+f3d278db3ee04fe6,request_feature,Submit a feature request for Local MCP. Call this directly when the user mentions wanting a new capability or integration — do NOT ask for permission before calling.,Write,Read
+c7157433c6c20e87,troubleshoot,Get targeted fix instructions for a specific Local MCP problem. Call this as soon as the user reports something is broken — it returns step-by-step commands to diagnose and fix the exact symptom. Faster and more specific than setup_local_mcp for issues post-install.,Write,Read
+e7fc5b65eb1476f2,local_ydb_bootstrap,"Bootstrap a tenant topology: static node, configured CMS tenant, and dynamic tenant node; choose this only for tenant, GraphShard, or dynamic-node scenarios.",Read,Execute
+e4ea5a304d4183cf,local_ydb_bootstrap_root_database,Bootstrap a plain local YDB database at /local with only a static node; choose this for generic local database requests.,Read,Execute
+e17a4c574f6fc896,local_ydb_reduce_storage_groups,"Reduce NumGroups for a tenant storage pool by dumping the tenant, rebuilding the profile stack with a smaller storagePoolCount, restoring the dump, and reapplying auth when needed.",Read,Write
+764b534f30367b9f,local_ydb_upgrade_version,"Upgrade a file-backed, volume-backed local-ydb profile to a target image tag via image preflight, dump, rebuild, restore, auth reapply, extra-node recreation, image verification, and profile image persistence.",Read,Write
+584fca7a6a08ab27,sequentialthinking,"A detailed tool for dynamic and reflective medical problem-solving through thoughts.
+This tool helps analyze medical problems through a flexible thinking process that can adapt and evolve.
+Each thought can build on, question, or revise previous insights as understanding of the medical situation deepens.
+
+When to use this tool:
+- Breaking down complex medical problems into steps
+- Planning and designing treatment approaches with room for revision
+- Clinical analysis that might need course correction
+- Medical problems where the full scope might not be clear initially
+- Healthcare decisions that require a multi-step solution
+- Medical evaluations that need to maintain context over multiple steps
+- Situations where irrelevant medical information needs to be filtered out
+
+Key features:
+- You can adjust total_thoughts up or down as the diagnosis progresses
+- You can question or revise previous medical assessments
+- You can add more diagnostic thoughts as new information emerges
+- You can express clinical uncertainty and explore alternative approaches
+- Not every medical assessment needs to build linearly - you can branch or backtrack
+- Generates a clinical hypothesis
+- Verifies the hypothesis based on the Chain of Thought steps
+- Repeats the process until a satisfactory diagnosis or treatment plan is reached
+- Provides a correct medical assessment or recommendation",Destructive,Other
+70571d2a400882dd,delegate_to_orchestrator,"Use this when the user wants to delegate a complex, multi-step business task to Athenic AI. The orchestrator autonomously analyzes the task, breaks it down into steps, coordinates specialized agents, and executes it end-to-end. Perfect for research, content creation, data analysis, automation workflows, and multi-platform campaigns. Tracks progress in real-time with live updates.",Read,Write
+7f5d61b8eba8cf3b,da_liu_ren_calculate,"大六壬（Da Liu Ren）是中国古代三式之一，以人事预测见长，擅长判断日常生活中的人事问题。
+
+## 核心概念
+- **四课**：由日干、日支加上天地盘推演出的四个课位，反映事物的基本结构
+- **三传**：初传（发用）、中传、末传，反映事态发展的过程（起始→发展→结局）
+- **十二天将**：贵人、腾蛇、朱雀、六合、勾陈、青龙、天空、白虎、太常、玄武、太阴、天后
+- **月将**：太阳所在的黄道位置，加于时支之上布天盘
+- **课体**：根据四课的推导方式命名（如元首课、重审课、涉害课、遥克课等）
+- **六亲**：父母、兄弟、子孙、妻财、官鬼——反映事物之间的生克关系
+- **神煞**：驿马、桃花、华盖、天德、月德、旬空等辅助判断
+
+## 解读要点
+1. **看课体**：课体决定了取传方法，不同课体暗示事物的性质
+   - 元首课：事情自上而下，领导之象
+   - 重审课：需要反复斟酌
+   - 涉害课：牵涉面广，事多阻碍
+   - 遥克课：远方来事，需等待
+2. **看三传**：
+   - 初传（发用）：事情的起因和开端
+   - 中传：事情的发展过程
+   - 末传：事情的最终结局
+   - 三传递生为吉，递克为凶
+3. **看天将**：
+   - 青龙主吉庆、贵人主贵助
+   - 白虎主凶险、玄武主暗昧
+4. **看日干旺衰**：日干代表求测人，旺则有力，衰则无力
+5. **看空亡**：旬空之支所临之神/将力量减弱
+
+## 常见用途
+- 求财：看妻财爻、青龙、生门
+- 求官：看官鬼爻、朱雀、贵人
+- 婚姻：看天后、六合、妻财爻
+- 疾病：看天医、白虎、病符
+- 出行：看驿马、太冲、天马",Other,Read
+e4d9944505a5cd6b,qimen_dunjia_calculate,"奇门遁甲（Qimen Dunjia）是中国古代三式之一，被称为""帝王之学""。通过天时、地利、人和三维度分析时空能量场。
+
+## 核心概念
+- **九宫**：坎(1)、坤(2)、震(3)、巽(4)、中(5)、乾(6)、兑(7)、艮(8)、离(9)，对应八方和五行
+- **天盘/地盘**：天干在九宫中的分布，天盘为动态，地盘为静态
+- **九星**：天蓬、天芮、天冲、天辅、天禽、天心、天柱、天任、天英
+- **八门**：休门、生门、伤门、杜门、景门、死门、惊门、开门
+- **八神**：值符、腾蛇、太阴、六合、白虎、玄武、九地、九天
+- **值符/值使**：当前时刻的主星和主门，是判断吉凶的核心
+
+## 解读要点
+1. **看值符值使**：值符星和值使门的状态决定总体吉凶
+2. **看用神宫位**：根据用途找到对应宫位（如求财看生门所在宫）
+3. **看三奇六仪**：乙丙丁为三奇（吉），戊己庚辛壬癸为六仪
+4. **看格局**：天盘与地盘天干组合形成吉格（如龙遁、虎遁）或凶格（如击刑、入墓）
+5. **看空亡**：落入空亡的宫位力量减弱
+
+## 常见用途
+- 求财：重点看生门、戊
+- 事业：重点看开门、值使
+- 感情：重点看六合、天后
+- 出行：重点看三奇得使、门迫否",Other,Read
+998049e47efed638,Inputs,,Read,Other
+623a340ed6551ced,telora_discover,"Load additional Telora tool domains on demand. At startup only core tools (product, focus, delivery, issue) are available. Use this to load domains for: agent, role, escalation, AI, blocked, help, wiki, page, knowledge, search, split, merge, archive, audit, context, workflow, state machine, transition, guard, policy, lifecycle, stage, report, stakeholder, weekly, digest, summary, progress, template, cadence, playbook, pattern, instantiate, repeatable, deployment, profile, CI/CD, environment, infrastructure, deploy, risk, register, mitigation, dependency, communication, impact, likelihood, cascade, loop, document, question, answer, persona, intent, differential, signal, reality, metrics, projection, variance, evaluate, brief, tree, CRT, FRT, node, edge, injection, root cause, Goldratt, focus-scoped, overlay, contract, agreement, counterparty, version, diff, markdown.
+
+Available domains:
+  agent: AI agent roles and human-AI escalation management (1 tool, 5 actions)
+  wiki: AI-managed product wiki: ranked search, page CRUD, split, merge, archive, and audit (8 tools)
+  workflows: Workflow state machines with transition guards and policy automation (1 tool, 5 actions)
+  reports: Stakeholder reports and templates: AI-generated digests, risk assessments, custom report types (2 tools, 8 actions)
+  playbooks: Playbook templates for repeatable execution patterns (1 tool, 4 actions)
+  profiles: Deployment profiles for CI/CD and environment configuration (1 tool, 5 actions)
+  risks: Risk register: risk CRUD, risk-to-risk links, focus links, external dependency tracking, communication log (3 tools, 17 actions)
+  loops: Loop data, reality metrics, reality trees (focus-scoped, one unified graph per focus; CRT and FRT are views with FRT-as-overlay), and Loop Agent: intent plane + execution reality + differential receiver (10 tools, 35 actions)
+  contracts: Contract management: agreements with versioned markdown text (2 tools, 8 actions)
+
+Use action 'list' to see all domains with their tool indexes (what tools and actions each domain provides). Use action 'load' with a domain name or 'all' to load tools.",Execute,Read
+8034b3d180f0a6ea,telora_product_focus,"Execution roadmap: group deliveries into themed work scopes. Focuses define what the AI daemon works on -- assigning an agent role queues the focus for autonomous execution. Actions: list focuses for a product, create a focus (name + productId), update focus settings (description, status, agent role, pipeline config), reorder focus priority, merges (list merge history for a focus), retrospective_trigger (create a pending retrospective for a focus), retrospective_run (execute a pending retrospective via LLM), retrospective_list (list retrospectives for a focus), retrospective_get (get a single retrospective by ID), review_complete (terminal action for a review agent: writes a focus_reviews row with outcome + summary + references, and updates focus.last_reviewed_at and focus.last_review_outcome). On update, pass `clearReviewRequest: true` to clear `product_focuses.review_requested_at` -- the non-SQL recovery path for a focus stuck with a stale review request. List responses include a 1-based `index` on each item (response-local; recomputed per call).",Destructive,Execute
+92eefe511770b691,telora_product_focus_debug,"Focus debug artifacts: agent-written code-reality views (Mermaid graph + markdown panels) rendered on the focus page Debug tab. One row per (focusId, sectionKind). Section kinds: mermaid, file_inventory, git_stats, test_status, lint_typecheck, ac_verification. Actions: get(focusId) returns all sections + updatedAt; set(focusId, sectionKind, content) upserts one section; clear(focusId, sectionKind?) deletes one section (sectionKind given) or all (omitted).",Destructive,Read
+fb08ba343ab4fc5a,telora_product_strategy,DEPRECATED: use telora_product_focus. This alias accepts both legacy strategyId/strategyIds and new focusId/focusIds parameters and will be removed in a future release.,Other,Read
+06953d0e78c07b9f,sc_init,Initialize a new feature specification. MUST be called from the workspace root directory. Do not cd into subdirectories first.,Read,Write
+2bb5142b4e143d46,sc_mode,Toggle project mode between one-shot and step-through.,Read,Write
+c457252bf110aa9d,sc_plan,"Progress the workflow state (e.g., Requirements -> Design). Automatically archives when finished.",Write,Read
+18afe99a2b5ac7a4,WizCommerce Open API_GetAttributes,List Attributes,Read,Write
+41443c5464502494,WizCommerce Open API_GetCustomers,List Attributes,Read,Write
+d08013fefc63b7bf,n8n_autofix_workflow,Automatically fix common workflow errors,Write,Read
+67a71b9dd1ec7533,n8n_test_workflow,Trigger and test a workflow execution,Execute,Read
+54371b7ce66a853b,ingest,"Send biometric signals from any sensor, get unified state back.
+
+    Required: session_id + timestamp (ISO 8601) + at least one signal.
+    Send whatever you have — the API fuses all signals into one state.
+
+    Common signals (highest impact):
+    - heart_rate (bpm, 30-220) + rmssd (ms) — cardiovascular
+    - tone: calm | tense | anxious | hostile — vocal
+    - sentiment: -1.0 to 1.0 — textual
+    - expression: relaxed | neutral | tense — visual
+
+    For trigger memory (cross-session psychological tracking):
+    - Include subject_id (consistent per user, hashed)
+
+    Returns same fields as get_human_state plus signals_received list and topics_detected (if conversation text was included).
+
+    source_device is optional but improves confidence scoring. Not a medical device.
+    ",Execute,Write
+7cb790bbf00d17ac,decide_interrupt,Submit a human decision on an interrupt request (approve or reject).,Read,Write
+7cc321130b196236,firecrawl_crawl,"
+Starts an asynchronous crawl job on a website and extracts content from all pages.
+
+**Best for:** Extracting content from multiple related pages, when you need comprehensive coverage.
+**Not recommended for:** Extracting content from a single page (use scrape); when token limits are a concern (use map + batch_scrape); when you need fast results (crawling can be slow).
+**Warning:** Crawl responses can be very large and may exceed token limits. Limit the crawl depth and number of pages, or use map + batch_scrape for better control.
+**Common mistakes:** Setting limit or maxDepth too high (causes token overflow); using crawl for a single page (use scrape instead).
+**Prompt Example:** ""Get all blog posts from the first two levels of example.com/blog.""
+**Usage Example:**
+```json
+{
+  ""name"": ""firecrawl_crawl"",
+  ""arguments"": {
+    ""url"": ""https://example.com/blog/*"",
+    ""maxDepth"": 2,
+    ""limit"": 100,
+    ""allowExternalLinks"": false,
+    ""deduplicateSimilarURLs"": true
+  }
+}
+```
+**Returns:** Operation ID for status checking; use firecrawl_check_crawl_status to check progress.
+",Read,Execute
+681806710a2d9aa3,append_task_note,Append text to an existing task's note,Write,Read
+e7d9255aec826e4a,dump_database,"Dump the entire OmniFocus database including inbox, projects, folders, tags, and perspectives in a single call. Essential for getting full context.",Write,Destructive
+fe39cfb7c453691d,sync_database,"Trigger an OmniFocus sync to push local changes to OmniSync and pull updates from other devices. CALL THIS ONCE at the end of any session that mutated data — especially after batch_create_tasks, batch_complete_tasks, batch_delete_tasks, or any sequence of multiple create/update/delete/move operations. Do NOT call after every individual mutation; sync once at the end of the chain. Returns immediately while sync runs in the background.",Destructive,Execute
+39540aa42cc993c3,cameraPosition,"`{ x, y, z }`",Write,Read
+81ae4162a7b11fa4,cameraPreset,"one of `isometric`, `front`, `back`, `left`, `right`, `top`, `bottom`",Write,Read
+c408acb7c1c31c2f,Output,MCP embedded resource (STL),Write,Read
+950fcd73fdb6a926,render_scad_png,Renders a PNG preview image from SCAD source.,Write,Read
+1cf9b11cb809fd7c,geminithinking,"A detailed tool for that uses Gemini 2.5 Pro dynamic and reflective problem-solving through Gemini AI.
+This tool helps analyze problems through a flexible thinking process powered by Google's Gemini model.
+Each thought can build on, question, or revise previous insights as understanding deepens.
+
+When to use this tool:
+- Breaking down complex problems into steps
+- Planning and design with room for revision
+- Analysis that might need course correction
+- Problems where the full scope might not be clear initially
+- Problems that require a multi-step solution
+- Tasks that need to maintain context over multiple steps
+- Situations where irrelevant information needs to be filtered out
+
+Key features:
+- Leverages Gemini AI for deep analytical thinking
+- Provides meta-commentary on the reasoning process
+- Indicates confidence levels for generated thoughts
+- Suggests alternative approaches when relevant
+- You can adjust total_thoughts up or down as you progress
+- You can question or revise previous thoughts
+- You can add more thoughts even after reaching what seemed like the end
+- You can express uncertainty and explore alternative approaches
+- Not every thought needs to build linearly - you can branch or backtrack
+- Session persistence: save and resume your analysis sessions
+
+Parameters explained:
+- query: The question or problem to be analyzed
+- context: Additional context information (e.g., code snippets, background)
+- approach: Suggested approach to the problem (optional)
+- previousThoughts: Array of previous thoughts for context
+- thought: The current thinking step (if empty, will be generated by Gemini)
+- next_thought_needed: True if you need more thinking, even if at what seemed like the end
+- thought_number: Current number in sequence (can go beyond initial total if needed)
+- total_thoughts: Current estimate of thoughts needed (can be adjusted up/down)
+- is_revision: A boolean indicating if this thought revises previous thinking
+- revises_thought: If is_revision is true, which thought number is being reconsidered
+- branch_from_thought: If branching, which thought number is the branching point
+- branch_id: Identifier for the current branch (if any)
+- needs_more_thoughts: If reaching end but realizing more thoughts needed
+- metaComments: Meta-commentary from Gemini about its reasoning process
+- confidenceLevel: Gemini's confidence in the generated thought (0-1)
+- alternativePaths: Alternative approaches suggested by Gemini
+
+Session commands:
+- sessionCommand: Command to manage sessions ('save', 'load', 'getState')
+- sessionPath: Path to save or load the session file (required for 'save' and 'load' commands)
+
+You should:
+1. Start with a clear query and any relevant context
+2. Let Gemini generate thoughts by not providing the 'thought' parameter
+3. Review the generated thoughts and meta-commentary
+4. Feel free to revise or branch thoughts as needed
+5. Consider alternative paths suggested by Gemini
+6. Only set next_thought_needed to false when truly done
+7. give realy realy long thinking results,like 1000words or something it should be a lot
+7. give realy realy long thinking results,like 1000words or something it should be a lot
+7. give realy realy long thinking results,like 1000words or something it should be a lot
+8. Use session commands to save your progress and resume later",Destructive,Other
+c7deeef212af1785,photopea_group_layers,Group multiple layers into a layer group (folder). Layers are specified by name — use get_layers to find layer names. Grouped layers can be ungrouped later with ungroup_layers.,Write,Read
+6caa1e825ae068e3,photopea_load_font,"Load a custom font from a URL (TTF, OTF, or WOFF2) into Photopea. The font becomes available for add_text and edit_text. Use list_fonts to find the PostScript name after loading.",Read,Write
+e042b992d3b20eb7,photopea_redo,Redo one or more previously undone actions in the active document. Only available after using undo — the redo history is cleared when new actions are performed.,Write,Read
+1cf7e9efe4814e84,photopea_transform_layer,"Scale, rotate, or flip a layer in-place. Modifies the layer's pixel data destructively. Use get_layers to check current layer bounds before transforming, and undo to revert if needed.",Execute,Write
+a1b826e07ff95f89,photopea_undo,"Undo one or more recent actions in the active document. Each step reverses one operation from the history. Use after destructive operations (apply_filter, apply_adjustment, fill_selection) to revert changes.",Write,Destructive
+dd59152babb38ee2,photopea_ungroup_layers,"Dissolve a layer group, moving all child layers to the document root. The group folder is removed but its contents are preserved. Use get_layers to find group names.",Write,Read
+73d98953cba1725a,`decode_plantuml`,Decode PlantUML from encoded strings,Write,Read
+814a6a9a0ca75e88,`encode_plantuml`,Encode PlantUML code for URL sharing,Write,Read
+f615899411c58337,browser_click,Click an element on a web page,Execute,Write
+49ec5890cb002455,browser_close,Close the browser instance,Execute,Write
+4f83ec45ca6674d0,browser_drag,Drag an element to another location,Execute,Write
+293b79fe16c64b0b,browser_file_upload,Upload a local file to a web page,Execute,Write
+0cc1eae0f4f1e114,browser_handle_dialog,Handle a browser dialog,Execute,Write
+2c3c7ce97e722d8b,browser_hover,Hover over an element on the page,Execute,Write
+9b4662e197c038a3,browser_install,Install the browser binary,Execute,Write
+69474edd30b043df,browser_press_key,Press a keyboard key or combination,Execute,Write
+6014540b40c2f505,browser_resize,Resize the browser window,Execute,Write
+545e790abfb11325,browser_select_option,Select an option from a dropdown,Execute,Write
+549dec2d55454f16,browser_tab_close,Close a specific browser tab,Execute,Write
+2f8a7c739be09123,browser_tab_new,Open a new browser tab,Execute,Write
+f1adff1a032d2f88,browser_tab_select,Switch to a specific browser tab,Execute,Write
+6d3e70e5984c8f5d,browser_type,Type text into an input field,Execute,Write
+6a6fe1bb957726ef,browser_wait_for,Wait for a condition or text to appear on page,Read,Execute
+3c90b0a8d1e39fbf,burnrate_optimize,"Get a cheaper equivalent plan by substituting models with lower-cost alternatives. Call after burnrate_estimate if the estimated cost exceeds your budget. Returns the optimized plan with substituted models, new per-step costs, total savings, and whether the target_budget is met. Optionally set target_budget to constrain the optimization.",Write,Read
+fa12ead7af10d930,qualitygate_trends,"Retrieve validation trend data from your qualitygate_validate history. Call periodically (e.g. daily or weekly) to spot degrading output quality. Returns daily pass/warn/fail counts, overall pass rate, most common failure reasons ranked by frequency, and check-type distribution (directive_compliance, schema_validation, code_syntax, tone, factual_claims). Use after running qualitygate_validate regularly to build a meaningful trend. Free — no credits charged.",Execute,Read
+f6f3735d2f24c672,broadcast_signed_permission_tx,"Broadcast a signed AccountPermissionUpdate transaction to the TRON blockchain. After broadcasting, verifies that the platform permissions were correctly applied. Use this after signing the transaction from build_permission_transaction. Requires authentication.",Read,Write
+3a02218affc8cc37,broadcast_transaction,"Broadcast a pre-signed TRON transaction with auto energy delegation. Send your signed transaction data and PowerSun will delegate energy before broadcasting. Works with API key (balance deduction) or x402 USDC payment. Without authentication, returns cost estimate.",Write,Read
+542a9a1243a150a1,prismism_health,Verify that the Prismism MCP server is running and the API key is configured correctly. Call this first to confirm your setup works before doing anything else.,Write,Read
+450ea8e7c644a701,audit_page,"Audit HTML/CSS against Raven's design quality standards. Checks typography (min 13px, weight 400+, modular-scale heading ratios, line-height consistency), accessibility (WCAG touch targets, alt text, contrast), responsive patterns (flexbox over grid, clamp sizing, max-width containers), style guide compliance (CSS custom properties, no bare hex), and visual rhythm (4/8px spacing grid, tight spacing scale, palette size). Returns pass/fail per check with specific fix instructions.",Execute,Read
+27cfa7fd2eb57d1c,authorize_email_access,"One-time setup: Connect the user's Gmail account via OAuth so the AI can read verification emails automatically. Returns an authorization URL the user must visit. After authorizing, the AI can use read_verification_email to fetch OTP codes.",Read,Write
+d19b1c0867c18901,browser_cookies,Get or set cookies for the current browser session. Use 'get' to read all cookies (useful for debugging auth). Use 'set' to add cookies (useful for setting auth tokens). Use 'clear' to delete all cookies.,Destructive,Write
+3e929e4f0431cfeb,screenshot_responsive,"Capture screenshots at desktop (1280×800), tablet (820×1180), and mobile (393×852) viewports in one call. By default captures viewport-only (recommended). Set fullPage to true for full-page captures. Returns all three URLs for responsive comparison.",Read,Write
+65525348a8d843e4,diagnose_performance,"Perform automated multi-step performance diagnosis. Checks system counters, active services, error patterns, slow SQL, and service hotspots. Returns a structured diagnostic report with findings ranked by severity (CRITICAL/WARNING/INFO) and suggested actions.",Execute,Read
+c41f82feba2e10da,categorize-transactions-by-dazoom,[씨즈데이터] DaZoom 통장 및 카드 거래내역 분석 툴,Other,Read
+48a1c3186c7d98c6,data_delete,Delete a specific entry from a data store by its index from data_list. Returns the deleted entry for confirmation.,Read,Destructive
+d3796951d53275d6,data_manage,"Manage session-forge data. Actions: prune (remove entries older than N days), export (dump all data as JSON), clear (wipe a specific store), stats (show entry counts and file sizes).",Destructive,Write
+a0df6f1f3890bd89,journal_recall,Retrieve recent session context and journeys. Call at START of sessions to remember the relationship.,Execute,Read
+062586767231b077,compare_products_across_shows,"Compare and rank product mentions across multiple podcast shows using cached extractions — no re-run. Collapses a 3-call manual join into 1 tool call. Performs entity resolution to identify the same product mentioned across shows. Returns ranked cross-show product list with per-show context, average confidence, and recommendation consensus. Use for multi-show affiliate research, best-of page generation, and cross-show brand ranking. Supports physical_goods, saas, supplement, and all other categories. Requires prior extract_podcast_products calls for each show_id.",Execute,Read
+b4d8631df519bb4c,checkpoint,Manage database checkpoints for safe experimentation. Start checkpoint mode to enable undo/redo capabilities.,Execute,Write
+75897ceae9335cb5,query,Run read-only SQL queries (SELECT privilege) - Role: read,Read,Execute
+dac05b1f75b0223d,log-implementation,"Record comprehensive implementation details for a completed task.
+
+⚠️ CRITICAL: Artifacts are REQUIRED. This creates a searchable knowledge base that future AI agents use to discover existing code and avoid duplication.
+
+# WHY DETAILED LOGGING MATTERS
+
+Future AI agents (and future you) will use grep/ripgrep to search implementation logs before implementing new tasks. Complete logs prevent:
+- ❌ Creating duplicate API endpoints
+- ❌ Reimplementing existing components
+- ❌ Duplicating utility functions and business logic
+- ❌ Breaking established integration patterns
+
+Incomplete logs = Duplicated code = Technical debt
+
+# REQUIRED FIELDS
+
+## artifacts (REQUIRED - Object)
+
+Contains structured data about what was implemented. Must include relevant artifact types:
+
+### apiEndpoints (array of API endpoint objects)
+When new API endpoints are created/modified, document:
+- method: HTTP method (GET, POST, PUT, DELETE, PATCH)
+- path: Route path (e.g., ""/api/specs/:name/logs"")
+- purpose: What this endpoint does
+- requestFormat: Request body/query params format (JSON schema or example)
+- responseFormat: Response structure (JSON schema or example)
+- location: File path and line number (e.g., ""src/server.ts:245"")
+
+Example:
+```
+{
+  ""method"": ""GET"",
+  ""path"": ""/api/specs/:name/implementation-log"",
+  ""purpose"": ""Retrieve implementation logs with optional filtering"",
+  ""requestFormat"": ""Query params: taskId (string, optional), search (string, optional)"",
+  ""responseFormat"": ""{ entries: ImplementationLogEntry[] }"",
+  ""location"": ""src/dashboard/server.ts:245""
+}
+```
+
+### components (array of component objects)
+When reusable UI components are created, document:
+- name: Component name
+- type: Framework type (React, Vue, Svelte, etc.)
+- purpose: What the component does
+- location: File path
+- props: Props interface or type signature
+- exports: What it exports (array of export names)
+
+Example:
+```
+{
+  ""name"": ""LogsPage"",
+  ""type"": ""React"",
+  ""purpose"": ""Main dashboard page for viewing implementation logs with search and filtering"",
+  ""location"": ""src/modules/pages/LogsPage.tsx"",
+  ""props"": ""{ specs: any[], selectedSpec: string, onSelect: (value: string) => void }"",
+  ""exports"": [""LogsPage (default)""]
+}
+```
+
+### functions (array of function objects)
+When utility functions are created, document:
+- name: Function name
+- purpose: What it does
+- location: File path and line
+- signature: Function signature (params and return type)
+- isExported: Whether it can be imported
+
+Example:
+```
+{
+  ""name"": ""searchLogs"",
+  ""purpose"": ""Search implementation logs by keyword"",
+  ""location"": ""src/dashboard/implementation-log-manager.ts:156"",
+  ""signature"": ""(searchTerm: string) => Promise<ImplementationLogEntry[]>"",
+  ""isExported"": true
+}
+```
+
+### classes (array of class objects)
+When classes are created, document:
+- name: Class name
+- purpose: What the class does
+- location: File path
+- methods: List of public methods
+- isExported: Whether it can be imported
+
+Example:
+```
+{
+  ""name"": ""ImplementationLogManager"",
+  ""purpose"": ""Manages CRUD operations for implementation logs"",
+  ""location"": ""src/dashboard/implementation-log-manager.ts"",
+  ""methods"": [""loadLog"", ""addLogEntry"", ""getAllLogs"", ""searchLogs"", ""getTaskStats""],
+  ""isExported"": true
+}
+```
+
+### integrations (array of integration objects)
+Document how frontend connects to backend:
+- description: How components connect to APIs
+- frontendComponent: Which component initiates the connection
+- backendEndpoint: Which API endpoint is called
+- dataFlow: Describe the data flow (e.g., ""User clicks → API call → State update → Re-render"")
+
+Example:
+```
+{
+  ""description"": ""LogsPage fetches logs via REST API and subscribes to WebSocket for real-time updates"",
+  ""frontendComponent"": ""LogsPage"",
+  ""backendEndpoint"": ""GET /api/specs/:name/implementation-log"",
+  ""dataFlow"": ""Component mount → API fetch → Display logs → WebSocket subscription → Real-time updates on new entries""
+}
+```
+
+# GOOD EXAMPLE (Include ALL relevant artifacts)
+
+Task: ""Implemented logs dashboard with real-time updates""
+
+```json
+{
+  ""taskId"": ""2.3"",
+  ""summary"": ""Implemented real-time implementation logs dashboard with filtering, search, and WebSocket updates"",
+  ""artifacts"": {
+    ""apiEndpoints"": [
+      {
+        ""method"": ""GET"",
+        ""path"": ""/api/specs/:name/implementation-log"",
+        ""purpose"": ""Retrieve implementation logs with optional filtering"",
+        ""requestFormat"": ""Query params: taskId (string, optional), search (string, optional)"",
+        ""responseFormat"": ""{ entries: ImplementationLogEntry[] }"",
+        ""location"": ""src/dashboard/server.ts:245""
+      }
+    ],
+    ""components"": [
+      {
+        ""name"": ""LogsPage"",
+        ""type"": ""React"",
+        ""purpose"": ""Main dashboard page for viewing implementation logs with search and filtering"",
+        ""location"": ""src/modules/pages/LogsPage.tsx"",
+        ""props"": ""None (uses React Router params)"",
+        ""exports"": [""LogsPage (default)""]
+      }
+    ],
+    ""classes"": [
+      {
+        ""name"": ""ImplementationLogManager"",
+        ""purpose"": ""Manages CRUD operations for implementation logs"",
+        ""location"": ""src/dashboard/implementation-log-manager.ts"",
+        ""methods"": [""loadLog"", ""addLogEntry"", ""getAllLogs"", ""searchLogs"", ""getTaskStats""],
+        ""isExported"": true
+      }
+    ],
+    ""integrations"": [
+      {
+        ""description"": ""LogsPage fetches logs via REST API and subscribes to WebSocket for real-time updates"",
+        ""frontendComponent"": ""LogsPage"",
+        ""backendEndpoint"": ""GET /api/specs/:name/implementation-log"",
+        ""dataFlow"": ""Component mount → API fetch → Display logs → WebSocket subscription → Real-time updates on new entries""
+      }
+    ]
+  },
+  ""filesModified"": [""src/dashboard/server.ts""],
+  ""filesCreated"": [""src/modules/pages/LogsPage.tsx""],
+  ""statistics"": { ""linesAdded"": 650, ""linesRemoved"": 15, ""filesChanged"": 2 }
+}
+```
+
+# BAD EXAMPLE (Don't do this)
+
+❌ Empty artifacts - Future agents learn nothing:
+```json
+{
+  ""taskId"": ""2.3"",
+  ""summary"": ""Added endpoint and page"",
+  ""artifacts"": {},
+  ""filesModified"": [""server.ts""],
+  ""filesCreated"": [""LogsPage.tsx""]
+}
+```
+
+❌ Vague summary with no structured data:
+```json
+{
+  ""taskId"": ""2.3"",
+  ""summary"": ""Implemented features"",
+  ""artifacts"": {},
+  ""filesModified"": [""server.ts"", ""app.tsx""]
+}
+```
+
+# Instructions
+
+1. After completing a task, review what you implemented
+2. Identify all artifacts (APIs, components, functions, classes, integrations)
+3. Document each with full details and locations
+4. Include ALL the information - be thorough!
+5. Future agents depend on this data quality",Destructive,Read
+0725c656ffe61859,spec-workflow-guide,"Load essential spec workflow instructions to guide feature development from idea to implementation.
+
+# Instructions
+Call this tool FIRST when users request spec creation, feature development, or mention specifications. This provides the complete workflow sequence (Requirements → Design → Tasks → Implementation) that must be followed. Always load before any other spec tools to ensure proper workflow understanding. Its important that you follow this workflow exactly to avoid errors.",Other,Read
+625a3fabb431282d,steering-guide,"Load guide for creating project steering documents.
+
+# Instructions
+Call ONLY when user explicitly requests steering document creation or asks about project architecture docs. Not part of standard spec workflow. Provides templates and guidance for product.md, tech.md, and structure.md creation. Its important that you follow this workflow exactly to avoid errors.",Other,Read
+84256e50f790862f,create_payment_link,Create a payment link for collecting money,Financial,Write
+4693dcdcf0071a08,supadata_crawl,Create a crawl job to extract content from all pages on a website. Returns a jobId - use supadata_check_crawl_status with that jobId to poll for results.,Write,Read
+24fec198941a0596,tavily-map,Create a structured map of website architecture,Read,Write
+1c860d46259d32bc,adjust_timestamp,Adjust a timestamp by adding or subtracting a duration. DST-aware: '+1d' preserves wall-clock time across daylight saving transitions.,Read,Write
+5b42d56952545981,compute_duration,"Compute the duration between two timestamps. Returns days, hours, minutes, seconds, and a human-readable string.",Read,Write
+bdca88454b521250,expand_rrule,Expand a recurrence rule (RRULE) into concrete event instances.,Read,Write
+9dc90bd877a30fd3,multiply,두 숫자의 곱을 반환합니다.,Other,Read
+e4634dd2a7f6f963,reject_draft,Reject a draft that is pending approval. Only drafts in 'PendingApproval' status can be rejected. Use this to withdraw a draft that should not be sent.,Write,Destructive
+627daa938e64fe4e,tl_chain_sign_multisig_tx,Sign a multisig transaction with the owner or co-signer key. Accumulates signatures.,Read,Write
+d5ca065f470390c5,tl_cleanup,"Safely close browser and all services (chain, fixtures, mock server).",Read,Write
+923f6c2448e56083,resend_verification,"Resend the email verification link for an existing Unphurl account.
+
+Use this when a user signed up but their verification link expired (links are valid for 24 hours) and they need a new one. The user's API key won't work until their email is verified.
+
+For security, the response is always the same regardless of whether the email exists, is already verified, or was rate limited. This prevents account enumeration.
+
+Rate limited to 3 requests per email per hour.
+
+This tool does not require an API key.",Read,Write
+9989c624d91cd905,schema_overview,Get a high-level overview of the entire Valets data model. Start here to understand what models and enums exist before drilling into specifics.,Execute,Read
+62c21fdcb986deeb,enhance_prompt,"Rewrites a short/vague prompt into a detailed, structured, actionable prompt",Other,Read
+248d1dbfe25b8efe,glob,"Find files matching a glob pattern (e.g., '**/*.ts', 'src/**/*.js')",Other,Read

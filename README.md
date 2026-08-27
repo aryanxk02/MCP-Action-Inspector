@@ -69,10 +69,10 @@ The SLM results are measured on the supplied validation set. The test labels are
 Run the reusable inference interface with:
 
 ```bash
-python predict.py \
-  --model-path slm_model/slm_model \
+python src/predict.py \
+  --model-path src/slm_model \
   --input data/test_unlabeled.jsonl \
-  --output predictions.csv
+  --output src/predictions.csv
 ```
 
 The output contains exactly:
